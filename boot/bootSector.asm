@@ -15,6 +15,8 @@ BaseOfStack		equ	07c00h
 BaseOfLoader		equ	09000h
 OffsetOfLoader		equ	0100h
 RootDirSectors		equ	14
+DeltaSectorNo		equ	17
+SectorNoOfFAT1		equ	1
 SectorNoOfRootDirectory	equ	19
 
 	jmp short LABEL_START
@@ -47,6 +49,15 @@ LABEL_START:
 	mov	ss, ax
 	mov	sp, BaseOfStack
 	
+	mov	ax, 0600h
+	mov	bx, 0700h
+	mov	cx, 0	
+	mov	dx, 0184fh
+	int	10h	
+
+	mov	dh, 0
+	call	DispStr
+
 	xor	ah, ah
 	xor	dl, dl
 	int	13h
@@ -105,10 +116,44 @@ LABEL_NO_LOADERBIN:
 %endif
 
 LABEL_FILENAME_FOUND:
-	mov dh, 0
-	call DispStr
+	mov	ax, RootDirSectors
+	and	di, 0FFE0h
+	add	di, 01Ah
+	mov	cx, word [es:di]
+	push	cx
+	add	cx, ax
+	add	cx, DeltaSectorNo
+	mov	ax, BaseOfLoader
+	mov	es, ax
+	mov	bx, OffsetOfLoader
+	mov	ax, cx
+
+LABEL_GOON_LOADING_FILE:
+	push	ax
+	push	bx
+	mov	ah, 0Eh
+	mov	al, '.'
+	mov	bl, 0Fh
+	int	10h
+	pop	bx
+	pop	ax
+
+	mov	cl, 1
+	call	ReadSector
+	pop	ax
+	call	GetFATEntry
+	cmp	ax, 0FFFh
+	jz	LABEL_FILE_LOADED
+	push	ax
+	mov	dx, RootDirSectors
+	add	ax, dx
+	add	ax, DeltaSectorNo
+	add	bx, [BPB_BytsPerSec]
+	jmp	LABEL_GOON_LOADING_FILE
+LABEL_FILE_LOADED:
+	mov	dh, 1
+	call	DispStr
 	jmp	BaseOfLoader:OffsetOfLoader
-	;jmp $
 
 wRootDirSizeForLoop	dw	RootDirSectors
 wSectorNo		dw	0
@@ -161,6 +206,46 @@ ReadSector:
 	add	esp, 2
 	pop	bp
 
+	ret
+
+GetFATEntry:
+	push	es
+	push	bx
+	push	ax
+	mov	ax, BaseOfLoader
+	sub	ax, 0100h
+	mov	es, ax
+	pop	ax
+	mov	byte [bOdd], 0
+	mov	bx, 3
+	mul	bx
+	mov	bx, 2
+	div	bx
+	cmp	dx, 0
+	jz	LABEL_EVEN
+	mov	byte [bOdd], 1
+LABEL_EVEN:
+	xor	dx, dx
+	mov	bx, [BPB_BytsPerSec]
+	div	bx
+	push	dx
+	mov	bx, 0
+	add	ax, SectorNoOfFAT1
+	mov	cl, 2
+	call	ReadSector
+	pop	dx
+	add	bx, dx
+	mov	ax, [es:bx]
+	cmp	byte [bOdd], 1
+	jnz	LABEL_EVEN_2
+	shr	ax, 4
+LABEL_EVEN_2:
+	and	ax, 0FFFh
+
+LABEL_GET_FAT_ENRY_OK:
+
+	pop	bx
+	pop	es
 	ret
 
 times 	510-($-$$)	db	0
