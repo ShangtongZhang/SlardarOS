@@ -1,0 +1,72 @@
+%include "boot.h"
+
+org 0100h
+;org 7c00h
+jmp short LABEL_BEGIN
+nop
+
+
+
+[SECTION .gdt]
+LABEL_GDT Descriptor 0, 0, 0
+LABEL_GDT_CODE Descriptor 0, segCodeLen - 1, DA_C + DA_32
+LABEL_GDT_VIDEO Descriptor 0b8000h, 0ffffh, DA_DRW
+
+gdtLen equ $ - LABEL_GDT
+gdtPtr dw gdtLen
+	   dd 0
+
+selectorCode equ LABEL_GDT_CODE - LABEL_GDT
+selectorVideo equ LABEL_GDT_VIDEO - LABEL_GDT
+
+[SECTION .s16]
+[BITS 16]
+LABEL_BEGIN:
+mov ax, cs
+mov ds, ax
+mov es, ax
+mov ss, ax
+mov sp, 0100h
+;mov sp, 7c00h
+
+xor eax, eax
+mov ax, cs
+shl eax, 4
+add eax, LABEL_SEG_CODE
+mov word [LABEL_GDT_CODE + 2], ax
+shr eax, 16
+mov byte [LABEL_GDT_CODE + 4], al
+mov byte [LABEL_GDT_CODE + 7], ah
+
+xor eax, eax
+mov ax, ds
+shl eax, 4
+add eax, LABEL_GDT
+mov dword [gdtPtr + 2], eax
+
+lgdt [gdtPtr]
+
+cli
+
+in al, 92h
+or al, 00000010b
+out 92h, al
+
+mov eax, cr0
+or eax, 1
+mov cr0, eax
+
+jmp dword selectorCode:0
+
+[SECTION .s32]
+[BITS 32]
+LABEL_SEG_CODE:
+mov ax, selectorVideo
+mov gs, ax
+mov edi, (80 * 0 + 39) * 2
+mov ah, 0ch
+mov al, 'P'
+mov [gs:edi], ax
+jmp $
+
+segCodeLen equ $ - LABEL_SEG_CODE
