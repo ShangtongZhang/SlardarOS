@@ -12,8 +12,9 @@ BaseOfStack		equ	0100h
 BaseOfStack		equ	07c00h
 %endif
 
-BaseOfLoader		equ	09000h
-OffsetOfLoader		equ	0100h
+BaseOfLoader		equ	0900h
+;OffsetOfLoader		equ	0100h
+OffsetOfLoader		equ	0
 RootDirSectors		equ	14
 DeltaSectorNo		equ	17
 SectorNoOfFAT1		equ	1
