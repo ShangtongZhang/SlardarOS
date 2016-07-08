@@ -10,5 +10,12 @@
 
 #define GDT_CODE 0x98
 #define GDT_32 0x4000
+#define GDT_DATA_RW 0x92
+
+#define SELECTOR_CODE_SEG 0x8
+#define SELECTOR_DATA_SEG 0x10
+#define SELECTOR_STACK_SEG 0x18
+
+#define TOP_OF_STACK 0xfff
 
 #endif
