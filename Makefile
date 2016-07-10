@@ -21,8 +21,9 @@ BOOT_LOADER_BIN := loader.bin
 OS_IMAGE := SlardarOS.img
 EMPTY_IMAGE := empty.img
 MOUNT_DIR := /Volumes/SlardarOS/
+KERNEL_BIN := kernel.bin
 
-.PHONY: qemu debug
+.PHONY: qemu debug os bootSector bootLoader osImage clean kernel
 
 debug: osImage
 	$(V) ttab -w eval 'gdb -x utils/gdb.cmd'
@@ -30,8 +31,10 @@ debug: osImage
 qemu: osImage
 	$(V) $(QEMU) -fda $(BUILD_DIR)/$(OS_IMAGE)
 
+os: osImage
+
 bootSector:
-	$(V) $(NASM) $(BOOT_DIR)/bootSector.asm -o $(BUILD_DIR)/$(BOOT_SECTOR_BIN)
+	$(V) $(NASM) -I $(BOOT_DIR)/ $(BOOT_DIR)/bootSector.asm -o $(BUILD_DIR)/$(BOOT_SECTOR_BIN)
 
 bootLoader:
 	$(V) $(CC) -m32 $(C_FLAGS) -B$(CC_COMPILER_PATH) -c $(BOOT_DIR)/bootLoader.S -o $(BUILD_DIR)/bootLoader.S.o
@@ -40,12 +43,16 @@ bootLoader:
 	$(V) $(OBJCOPY) -S -O binary $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/$(BOOT_LOADER_BIN)
 	$(V) $(OBJDUMP) -S -D $(BUILD_DIR)/bootLoader.o > $(BUILD_DIR)/bootLoader.dump
 
-osImage: bootSector bootLoader
+kernel:
+	#$(V) echo 'hello world!' > $(BUILD_DIR)/$(KERNEL_BIN)
+
+osImage: bootSector bootLoader kernel
 	$(V) $(DD) if=/dev/zero of=$(BUILD_DIR)/$(EMPTY_IMAGE) bs=512 count=2880
 	$(V) $(DD) if=$(BUILD_DIR)/$(BOOT_SECTOR_BIN) of=$(BUILD_DIR)/$(OS_IMAGE) bs=512 count=1
 	$(V) $(DD) if=$(BUILD_DIR)/$(EMPTY_IMAGE) of=$(BUILD_DIR)/$(OS_IMAGE) skip=1 seek=1 bs=512 count=2879
 	$(V) $(HD) attach $(BUILD_DIR)/$(OS_IMAGE)
 	$(V) $(CP) $(BUILD_DIR)/$(BOOT_LOADER_BIN) $(MOUNT_DIR)/$(BOOT_LOADER_BIN)
+	$(V) $(CP) $(BUILD_DIR)/$(KERNEL_BIN) $(MOUNT_DIR)/$(KERNEL_BIN)
 	$(V) $(HD) detach $(MOUNT_DIR)
 
 clean:

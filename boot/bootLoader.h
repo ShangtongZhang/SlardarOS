@@ -1,6 +1,16 @@
 #ifndef __BOOTLOADER_H
 #define __BOOTLOADER_H
 
+#define BASE_OF_KERNEL 0x700
+#define OFFSET_OF_KERNEL 0
+
+#define BPB_SEC_PER_TRK 18
+#define BS_DRV_NUM 0
+#define ROOT_DIR_SECTORS 14
+#define DELTA_SECTOR_NUM 17
+#define BPB_BYTES_PER_SEC 512
+#define SEC_NUM_OF_FAT1 1
+
 #define GDT_DESCRIPTOR(base, limit, type)\
 	.word limit & 0xffff;\
 	.word base & 0xffff;\
@@ -17,5 +27,15 @@
 #define SELECTOR_STACK_SEG 0x18
 
 #define TOP_OF_STACK 0xfff
+
+#define DPL0 0x00
+#define DPL1 0x20
+#define DPL2 0x40
+#define DPL3 0x60
+
+#define RPL0 0
+#define RPL1 1
+#define RPL2 2
+#define RPL3 3
 
 #endif
