@@ -15,7 +15,7 @@ start:
 	movl %eax, %ebp
 	movw $0x600, %ax
 	movw %ax, %es
-	
+
 	movw $19, sectorNo
 	xorb %ah, %ah
 	xorb %dl, %dl
@@ -105,13 +105,13 @@ goOnLoadingFile:
 	addw $DELTA_SECTOR_NUM, %ax
 	addw $BPB_BYTES_PER_SEC, %bx
 	jmp goOnLoadingFile
+
 fileLoaded:
 	# jmp fileLoaded
 
-
+# set selector for protected code
 lea protectModeCode, %eax
 lea gdt, %ebx
-
 add $8, %ebx
 add $2, %ebx
 movw %ax, (%bx)		# -> gdt + 8 + 2
@@ -120,6 +120,18 @@ add $2, %bx 		# -> gdt + 8 + 4
 movb %al, (%bx)
 add $3, %bx			# -> gdt + 8 + 7
 movb %ah, (%bx)
+
+# set selector for extra data
+# lea extraData, %eax
+# lea gdt, %ebx
+# add $0x28, %ebx
+# add $2, %ebx
+# movw %ax, (%bx)
+# shrl $16, %eax
+# add $2, %bx
+# movb %al, (%bx)
+# add $3, %bx
+# movb %ah, (%bx)
 
 cli
 inb $0x92, %al
@@ -132,7 +144,8 @@ movl %cr0, %eax
 orl $1, %eax
 movl %eax, %cr0
 
-movw $SELECTOR_DATA_SEG, %ax
+xorl %eax, %eax
+movw $SELECTOR_LEGACY_DATA_SEG, %ax
 mov %ax, %ds
 xorl %esi, %esi
 mov $SELECTOR_STACK_SEG, %ax
@@ -209,21 +222,29 @@ getFATEntryOK:
 
 protectModeCode:
 .code32
-	pushw $93		# just for verification
+	xorl %eax, %eax
+	movw kernelSize, %ax
+	pushl %eax
+	movl $0x7000, %eax
+	pushl %eax
 	call loadKernel
-	popw %ax		# just for verification
+	popl %eax
+	popl %eax
 
+extraData:
+kernelSize: .word 0
 sectorNo: .word 0
 rootDirSizeForLoop: .word ROOT_DIR_SECTORS
 kernelFileName: .string "KERNEL  BIN"
-kernelSize: .word 0
 isOdd: .word 0
 
 gdt:
 	GDT_DESCRIPTOR(0, 0, 0)
 	GDT_DESCRIPTOR(0, 0xfff, GDT_CODE + GDT_32)		# code seg, set base addr in runtime
-	GDT_DESCRIPTOR(0x7000, 0xfff, GDT_DATA_RW)		# data seg
-	GDT_DESCRIPTOR(0x800000, 0xfff, GDT_DATA_RW + DPL0)		# stack seg
+	GDT_DESCRIPTOR(0x7000, 0xffff, GDT_DATA_RW)		# kernel file data seg
+	GDT_DESCRIPTOR(0x800000, 0xffff, GDT_DATA_RW + DPL0)		# stack seg
+	GDT_DESCRIPTOR(0x700000, 0xffff, GDT_DATA_RW)	# general data seg
+	GDT_DESCRIPTOR(0x0, 0xffff, GDT_DATA_RW)	# legacy data seg
 gdtPtr:
-	.word 0x1f
+	.word 0x2f
 	.long gdt
