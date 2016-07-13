@@ -16,8 +16,6 @@ MKDIR := mkdir
 PYTHON := python
 V := @
 
-C_FLAGS := -fno-builtin -Wall -ggdb -gstabs -nostdinc -fno-stack-protector -O0 -nostdinc -std=c99
-
 BUILD_DIR := generated
 BOOT_DIR := boot
 UTILS_DIR := utils
@@ -36,7 +34,7 @@ KERNEL_OBJ_DIR = $(addprefix $(BUILD_DIR)/,$(subst :, ,$(KERNEL_DIR)))
 KERNEL_OBJS = $(addprefix $(BUILD_DIR)/,$(subst .cpp,.o,$(KERNEL_SRC)))
 KERNEL_DEPS = $(KERNEL_SRC:.cpp=.cpp.d)
 
-CXX_FLAGS := -I$(KERNEL_INC_DIR) -ffreestanding -O0 -Wall -Wextra -fno-exceptions -fno-rtti -ggdb -nostdlib
+CXX_FLAGS := -I$(KERNEL_INC_DIR) -ffreestanding -O0 -Wall -Wextra -fno-exceptions -fno-rtti -ggdb -nostdlib -std=c++11 -m32
 
 .PHONY: qemu debug os bootSector bootLoader osImage clean kernel start
 
@@ -55,15 +53,15 @@ bootSector:
 	$(V) $(NASM) -I $(BOOT_DIR)/ $(BOOT_DIR)/bootSector.asm -o $(BUILD_DIR)/$(BOOT_SECTOR_BIN)
 
 bootLoader:
-	$(V) $(CC) -m32 $(C_FLAGS) -c $(BOOT_DIR)/bootLoader.S -o $(BUILD_DIR)/bootLoader.S.o
-	$(V) $(CC) -m32 $(C_FLAGS) -I$(KERNEL_INC_DIR) -c $(BOOT_DIR)/bootLoader.c -o $(BUILD_DIR)/bootLoader.c.o
-	$(V) $(LD) -m elf_i386 -nostdlib -N -e start -Ttext 0x9000 -o $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/bootLoader.S.o $(BUILD_DIR)/bootLoader.c.o
+	$(V) $(CXX) $(CXX_FLAGS) -c $(BOOT_DIR)/bootLoader.S -o $(BUILD_DIR)/bootLoader.S.o
+	$(V) $(CXX) $(CXX_FLAGS) -c $(BOOT_DIR)/bootLoader.cpp -o $(BUILD_DIR)/bootLoader.cpp.o
+	$(V) $(CXX) $(CXX_FLAGS) -N -e start -Ttext 0x9000 -o $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/bootLoader.S.o $(BUILD_DIR)/bootLoader.cpp.o
 	$(V) $(OBJCOPY) -S -O binary $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/$(BOOT_LOADER_BIN)
 	$(V) $(OBJDUMP) -S -D $(BUILD_DIR)/bootLoader.o > $(BUILD_DIR)/bootLoader.dump
 	$(V) $(PYTHON) $(UTILS_DIR)/gdbCmd.py
 
 kernel: kernelDir $(KERNEL_OBJS)
-	$(V) $(CXX) -nostdlib -e main -Ttext 0x100000 -o $(BUILD_DIR)/kernel.bin $(KERNEL_OBJS)
+	$(V) $(CXX) $(CXX_FLAGS) -e main -Ttext 0x100000 -o $(BUILD_DIR)/kernel.bin $(KERNEL_OBJS)
 	$(V) $(OBJDUMP) -S -D $(BUILD_DIR)/kernel.bin > $(BUILD_DIR)/kernel.dump
 
 kernelDir:

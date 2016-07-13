@@ -2,10 +2,11 @@
 #include "elf.h"
 #include "bootLoader.h"
 
-typedef struct{
+class LjmpOperand {
+public:
 	uint32_t offset;
 	uint16_t selector;
-} LjmpOperand;
+};
 
 void memoryCopy(uint8_t* dest, uint8_t* src, size_t size) {
 	uint8_t* end = src + size;
@@ -16,10 +17,9 @@ void memoryCopy(uint8_t* dest, uint8_t* src, size_t size) {
 	}
 }
 
-void loadKernel(void* pKernel, size_t size) {
+extern "C" void loadKernel(void* pKernel, size_t) {
 	Elf32Header* pElfHeader = (Elf32Header*)pKernel;
 	Elf32ProgramHeader* pmHeaders = (Elf32ProgramHeader*)((uint32_t)pKernel + pElfHeader->ePHOff);
-	uint16_t pHeaderEntSize = pElfHeader->ePHEntSize;
 	uint16_t pmHeadersNum = pElfHeader->ePHNum;
 	Elf32ProgramHeader* pPmHeader;
 	for (uint16_t i = 0; i < pmHeadersNum; ++i) {

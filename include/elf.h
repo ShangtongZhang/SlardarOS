@@ -2,7 +2,7 @@
 #define __ELF_H
 
 #include "defs.h"
-#define EI_NIDENT 16
+constexpr uint32_t EI_NIDENT = 16;
 
 typedef uint32_t Elf32Addr;
 typedef uint16_t Elf32Half;
@@ -10,7 +10,8 @@ typedef uint32_t Elf32Off;
 typedef int32_t Elf32SWord;
 typedef uint32_t Elf32Word;
 
-typedef struct{
+class Elf32Header {
+public:
 	unsigned char eIdent[EI_NIDENT];
 	Elf32Half eType;
 	Elf32Half eMachine;
@@ -25,9 +26,10 @@ typedef struct{
 	Elf32Half eSHEntSize;
 	Elf32Half eSHNum;
 	Elf32Half eSHStrPos;
-} Elf32Header;
+};
 
-typedef struct{
+class Elf32ProgramHeader {
+public:
 	Elf32Word pType;
 	Elf32Off pOffset;
 	Elf32Addr pVAddr;
@@ -36,7 +38,6 @@ typedef struct{
 	Elf32Word pMemSize;
 	Elf32Word pFlags;
 	Elf32Word pAlign;
-} Elf32ProgramHeader;
-
+};
 
 #endif
