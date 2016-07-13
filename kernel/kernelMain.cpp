@@ -1,5 +1,9 @@
-#include "helper.h"
+void foo() {
+	
+}
+
 int main() {
+	foo();
 	while (true) {
 		
 	}

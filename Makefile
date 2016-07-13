@@ -16,7 +16,7 @@ MKDIR := mkdir
 PYTHON := python
 V := @
 
-C_FLAGS := -fno-builtin -Wall -ggdb -gstabs -nostdinc -fno-stack-protector -O0 -nostdinc
+C_FLAGS := -fno-builtin -Wall -ggdb -gstabs -nostdinc -fno-stack-protector -O0 -nostdinc -std=c99
 
 BUILD_DIR := generated
 BOOT_DIR := boot
@@ -28,7 +28,7 @@ EMPTY_IMAGE := empty.img
 MOUNT_DIR := /Volumes/SlardarOS/
 KERNEL_BIN := kernel.bin
 
-KERNEL_INC_DIR := .
+KERNEL_INC_DIR := include
 KERNEL_LIB_DIR := .
 KERNEL_DIR := kernel
 KERNEL_SRC = $(foreach dir,$(subst :, ,$(KERNEL_DIR)),$(wildcard $(dir)/*.cpp))
@@ -36,15 +36,18 @@ KERNEL_OBJ_DIR = $(addprefix $(BUILD_DIR)/,$(subst :, ,$(KERNEL_DIR)))
 KERNEL_OBJS = $(addprefix $(BUILD_DIR)/,$(subst .cpp,.o,$(KERNEL_SRC)))
 KERNEL_DEPS = $(KERNEL_SRC:.cpp=.cpp.d)
 
-CXX_FLAGS := -I$(KERNEL_INC_DIR) -ffreestanding -O0 -Wall -Wextra -fno-exceptions -fno-rtti -ggdb
+CXX_FLAGS := -I$(KERNEL_INC_DIR) -ffreestanding -O0 -Wall -Wextra -fno-exceptions -fno-rtti -ggdb -nostdlib
 
-.PHONY: qemu debug os bootSector bootLoader osImage clean kernel
+.PHONY: qemu debug os bootSector bootLoader osImage clean kernel start
 
 debug: osImage
 	$(V) ttab -w eval '$(GDB) -x $(BUILD_DIR)/gdb.cmd'
 	$(V) $(QEMU) -s -S -fda $(BUILD_DIR)/$(OS_IMAGE)
 qemu: osImage
 	$(V) $(QEMU) -fda $(BUILD_DIR)/$(OS_IMAGE)
+start:
+	$(V) ttab -w eval '$(GDB) -x $(BUILD_DIR)/gdb.cmd'
+	$(V) $(QEMU) -s -S -fda $(BUILD_DIR)/$(OS_IMAGE)
 
 os: osImage
 
@@ -53,14 +56,15 @@ bootSector:
 
 bootLoader:
 	$(V) $(CC) -m32 $(C_FLAGS) -c $(BOOT_DIR)/bootLoader.S -o $(BUILD_DIR)/bootLoader.S.o
-	$(V) $(CC) -m32 $(C_FLAGS) -c $(BOOT_DIR)/bootLoader.c -o $(BUILD_DIR)/bootLoader.c.o
+	$(V) $(CC) -m32 $(C_FLAGS) -I$(KERNEL_INC_DIR) -c $(BOOT_DIR)/bootLoader.c -o $(BUILD_DIR)/bootLoader.c.o
 	$(V) $(LD) -m elf_i386 -nostdlib -N -e start -Ttext 0x9000 -o $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/bootLoader.S.o $(BUILD_DIR)/bootLoader.c.o
 	$(V) $(OBJCOPY) -S -O binary $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/$(BOOT_LOADER_BIN)
 	$(V) $(OBJDUMP) -S -D $(BUILD_DIR)/bootLoader.o > $(BUILD_DIR)/bootLoader.dump
 	$(V) $(PYTHON) $(UTILS_DIR)/gdbCmd.py
 
 kernel: kernelDir $(KERNEL_OBJS)
-	$(V) $(CXX) -o $(BUILD_DIR)/kernel.bin $(KERNEL_OBJS)
+	$(V) $(CXX) -nostdlib -e main -Ttext 0x100000 -o $(BUILD_DIR)/kernel.bin $(KERNEL_OBJS)
+	$(V) $(OBJDUMP) -S -D $(BUILD_DIR)/kernel.bin > $(BUILD_DIR)/kernel.dump
 
 kernelDir:
 	$(V) $(MKDIR) -p $(KERNEL_OBJ_DIR)

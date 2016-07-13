@@ -38,7 +38,7 @@ searchInRootDirBegin:
 	lea kernelFileName, %si
 	movw $OFFSET_OF_KERNEL, %di
 	cld
-	movw 0x10, %dx
+	movw $0x10, %dx
 searchForKernelBin:
 	cmpw $0, %dx
 	jz nextSectorInRootDir
@@ -225,7 +225,7 @@ protectModeCode:
 	xorl %eax, %eax
 	movw kernelSize, %ax
 	pushl %eax
-	movl $0x7000, %eax
+	movl $LMA_BASE_OF_KERNEL, %eax
 	pushl %eax
 	call loadKernel
 	popl %eax
@@ -241,9 +241,9 @@ isOdd: .word 0
 gdt:
 	GDT_DESCRIPTOR(0, 0, 0)
 	GDT_DESCRIPTOR(0, 0xfff, GDT_CODE + GDT_32)		# code seg, set base addr in runtime
-	GDT_DESCRIPTOR(0x7000, 0xffff, GDT_DATA_RW)		# kernel file data seg
+	GDT_DESCRIPTOR(LMA_BASE_OF_KERNEL, 0x2fff, GDT_DATA_RW)		# kernel file data seg
 	GDT_DESCRIPTOR(0x800000, 0xffff, GDT_DATA_RW + DPL0)		# stack seg
-	GDT_DESCRIPTOR(0x700000, 0xffff, GDT_DATA_RW)	# general data seg
+	GDT_DESCRIPTOR(KERNEL_BASE_ADDRESS, 0xffff, GDT_CODE + GDT_32)	# flat code seg
 	GDT_DESCRIPTOR(0x0, 0xffff, GDT_DATA_RW)	# legacy data seg
 gdtPtr:
 	.word 0x2f
