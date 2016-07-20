@@ -15,6 +15,9 @@ gdbCmdFile.write('display /xh $ebx\n')
 gdbCmdFile.write('display /xh $ebp\n')
 gdbCmdFile.write('display /xh $esp\n')
 # gdbCmdFile.write('b *0x7d14\n')
+# gdbCmdFile.write('b *0x9116\n')
+
+
 
 addr = None
 for line in dumpFile.readlines():
@@ -24,7 +27,7 @@ for line in dumpFile.readlines():
         break
 
 # gdbCmdFile.write('b *0x' + addr + '\n')
-# gdbCmdFile.write('b loadKernel\n')
+gdbCmdFile.write('b initMemory\n')
 # gdbCmdFile.write('b *0x92d1\n')
 gdbCmdFile.write('display /i 0x100000 + $eip\n')
 gdbCmdFile.write('display /i 0x' + addr + ' + $eip\n')

@@ -1,5 +1,6 @@
-#ifndef __DEF_H
-#define __DEF_H
+#ifndef __DEFS_H
+#define __DEFS_H
+#include "boot/bootLoader.h"
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;

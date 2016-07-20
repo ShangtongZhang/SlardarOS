@@ -109,6 +109,34 @@ goOnLoadingFile:
 fileLoaded:
 	# jmp fileLoaded
 
+xorl %ebx, %ebx
+movl $BASE_OF_MEMORY_INFO, %eax
+movw %ax, %es
+xorl %eax, %eax
+movw %ax, %di
+addw $2, %di
+goOnReadMemInfo:
+movl $0xe820, %eax
+movl $MEMORY_INFO_UNIT_SIZE, %ecx
+movl $0x534d4150, %edx
+int $0x15
+jc memCheckFail
+addw $MEMORY_INFO_UNIT_SIZE, %di
+xorl %eax, %eax
+movw memInfoUnitNum, %ax
+incw %ax
+movw %ax, memInfoUnitNum
+cmpl $0, %ebx
+jne goOnReadMemInfo
+jmp memCheckOk
+memCheckFail:
+xorl %eax, %eax
+movw %ax, memInfoUnitNum
+memCheckOk:
+xorl %eax, %eax
+movw memInfoUnitNum, %ax
+movw %ax, %es:0
+
 # set selector for protected code
 lea protectModeCode, %eax
 lea gdt, %ebx
@@ -233,6 +261,7 @@ protectModeCode:
 
 extraData:
 kernelSize: .word 0
+memInfoUnitNum: .word 0
 sectorNo: .word 0
 rootDirSizeForLoop: .word ROOT_DIR_SECTORS
 kernelFileName: .string "KERNEL  BIN"
@@ -243,7 +272,7 @@ gdt:
 	GDT_DESCRIPTOR(0, 0xfff, GDT_CODE + GDT_32)		# code seg, set base addr in runtime
 	GDT_DESCRIPTOR(LMA_BASE_OF_KERNEL, 0x2fff, GDT_DATA_RW)		# kernel file data seg
 	GDT_DESCRIPTOR(0x800000, 0xffff, GDT_DATA_RW + DPL0)		# stack seg
-	GDT_DESCRIPTOR(KERNEL_BASE_ADDRESS, 0xffff, GDT_CODE + GDT_32)	# flat code seg
+	GDT_DESCRIPTOR(KERNEL_BASE_ADDRESS, 0xffff, GDT_CODE + GDT_32)	# kernel code seg
 	GDT_DESCRIPTOR(0x0, 0xffff, GDT_DATA_RW)	# legacy data seg
 gdtPtr:
 	.word 0x2f
