@@ -1,6 +1,6 @@
 #include "memoryManage/memoryManage.h"
 
-int main() {
+extern "C" int kernelMain() {
 	initMemory();
 	while (true) {}
 	return 0;

@@ -30,8 +30,10 @@ extern "C" void loadKernel(void* pKernel, size_t) {
 		memoryCopy((uint8_t*)pPAddr, (uint8_t*)pKernel + pOffset, pSegSize);
 	}
 	LjmpOperand kernelMainAddr;
-	kernelMainAddr.offset = pElfHeader->eEntry - KERNEL_BASE_ADDRESS;
-	kernelMainAddr.selector = SELECTOR_KERNEL_CODE_SEG;
+	// kernelMainAddr.offset = pElfHeader->eEntry - KERNEL_BASE_ADDRESS;
+	// kernelMainAddr.selector = SELECTOR_KERNEL_CODE_SEG;
+	kernelMainAddr.offset = pElfHeader->eEntry;
+	kernelMainAddr.selector = SELECTOR_FLAT_CODE_SEG;
 	__asm__("ljmp *%0"
 			::"m"(kernelMainAddr));
 }

@@ -35,7 +35,6 @@ KERNEL_OBJS = $(addprefix $(BUILD_DIR)/,$(subst .cpp,.o,$(KERNEL_SRC)))
 KERNEL_DEPS = $(KERNEL_SRC:.cpp=.cpp.d)
 
 CXX_FLAGS := -I$(KERNEL_INC_DIR) -Iinclude -Ikernel -ffreestanding -O0 -Wall -Wextra -fno-exceptions -fno-rtti -ggdb -nostdlib -std=c++11 -m32
-# CXX_FLAGS := -I$(KERNEL_INC_DIR) -Iinclude -Ikernel -O0 -Wall -Wextra -fno-exceptions -fno-rtti -ggdb -nostdlib -std=c++11 -m32
 
 .PHONY: qemu debug os bootSector bootLoader osImage clean kernel start
 
@@ -62,8 +61,7 @@ bootLoader:
 	$(V) $(PYTHON) $(UTILS_DIR)/gdbCmd.py
 
 kernel: kernelDir $(KERNEL_OBJS)
-	# $(LD) -m elf_i386 -nostdlib -T utils/kernel.ld -o $(BUILD_DIR)/kernel.bin $(KERNEL_OBJS)
-	$(V) $(CXX) $(CXX_FLAGS) -e main -Ttext 0x100000 -o $(BUILD_DIR)/kernel.bin $(KERNEL_OBJS)
+	$(V) $(CXX) $(CXX_FLAGS) -e kernelMain -Ttext 0x100000 -o $(BUILD_DIR)/kernel.bin $(KERNEL_OBJS)
 	$(V) $(OBJDUMP) -S -D $(BUILD_DIR)/kernel.bin > $(BUILD_DIR)/kernel.dump
 
 kernelDir:

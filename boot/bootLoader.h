@@ -21,20 +21,22 @@
 	.word limit & 0xffff;\
 	.word base & 0xffff;\
 	.byte (base >> 16) & 0xff;\
-	.word type & 0xffff;\
+	.word (type & 0xf0ff) | ((limit & 0x0f0000) >> 8);\
 	.byte (base >> 24) & 0xff
 
 #define GDT_CODE 0x98
 #define GDT_32 0x4000
+#define GDT_4K 0x8000
 #define GDT_DATA_RW 0x92
 
 #define SELECTOR_CODE_SEG 0x8
 #define SELECTOR_KERNEL_FILE_DATA_SEG 0x10
-#define SELECTOR_STACK_SEG 0x18
+#define SELECTOR_FLAT_STACK_SEG 0x18
 #define SELECTOR_KERNEL_CODE_SEG 0x20
 #define SELECTOR_LEGACY_DATA_SEG 0x28
+#define SELECTOR_FLAT_CODE_SEG 0x30
 
-#define TOP_OF_STACK 0xfff
+#define TOP_OF_STACK 0x200000
 
 #define DPL0 0x00
 #define DPL1 0x20
