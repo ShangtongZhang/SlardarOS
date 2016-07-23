@@ -23,8 +23,7 @@ public:
 
 void operator << (IOStream& iostream, const char* data);
 
-// extern IOStream& cout;
-extern VideoOutStream cout;
+extern IOStream& cout;
 
 }
 #endif

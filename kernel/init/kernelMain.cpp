@@ -1,10 +1,10 @@
 #include "io/io.h"
-#include "memoryManage/memoryManage.h"
+#include "mem/memoryManage.h"
 #include "utils/utils.h"
 
 void initBssVariable() {
 	os::VideoOutStream videoOutStream;
-	memoryCopy(&os::cout, &videoOutStream, sizeof(os::VideoOutStream));
+	os::utils::memoryCopy(&os::cout, &videoOutStream, sizeof(os::VideoOutStream));
 }
 
 extern "C" int kernelMain() {

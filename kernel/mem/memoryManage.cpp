@@ -1,5 +1,6 @@
 #include "io/io.h"
 #include "memoryManage.h"
+#include "plainMemoryManager.hpp"
 
 uint32_t MemoryInfoUnit::flagAvailable = 1;
 

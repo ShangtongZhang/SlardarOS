@@ -2,6 +2,9 @@
 #define __UTILS_H
 #include "defs.h"
 
+namespace os {
+namespace utils {
+
 template <typename T1, typename T2>
 void memoryCopy(T1* dest_, T2* src_, size_t size) {
 	uint8_t* dest = reinterpret_cast<uint8_t*>(dest_);
@@ -14,4 +17,6 @@ void memoryCopy(T1* dest_, T2* src_, size_t size) {
 	}
 }
 
+}
+}
 #endif

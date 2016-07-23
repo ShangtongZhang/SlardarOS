@@ -2,9 +2,8 @@
 
 namespace os {
 
-// VideoOutStream videoOutStream;
-VideoOutStream cout;
-// IOStream& cout(videoOutStream);
+VideoOutStream videoOutStream;
+IOStream& cout(videoOutStream);
 
 IOStream::IOStream() : color(0x07) {}
 
