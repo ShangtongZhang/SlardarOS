@@ -173,7 +173,7 @@ orl $1, %eax
 movl %eax, %cr0
 
 xorl %eax, %eax
-movw $SELECTOR_LEGACY_DATA_SEG, %ax
+movw $SELECTOR_FLAT_DATA_SEG, %ax
 mov %ax, %ds
 xorl %esi, %esi
 mov $SELECTOR_FLAT_STACK_SEG, %ax
@@ -272,7 +272,7 @@ gdt:
 	GDT_DESCRIPTOR(LMA_BASE_OF_KERNEL, 0x2fff, GDT_DATA_RW)		# kernel file data seg
 	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_32 | GDT_4K)		# flat stack seg
 	GDT_DESCRIPTOR(KERNEL_BASE_ADDRESS, 0xffff, GDT_CODE + GDT_32)	# kernel code seg
-	GDT_DESCRIPTOR(0, 0xffff, GDT_DATA_RW)					# legacy data seg
+	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_4K)				# flat data seg
 	GDT_DESCRIPTOR(0, 0xfffff, GDT_CODE | GDT_32 | GDT_4K)	# flat code seg
 gdtPtr:
 	.word 0x37
