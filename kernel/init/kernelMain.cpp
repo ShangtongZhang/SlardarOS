@@ -13,7 +13,7 @@ extern "C" int kernelMain() {
 	initBssVariables();
 	performUnitTests();
 
-	// initMemory();
+	initMemory();
 	while (true) {}
 	return 0;
 }

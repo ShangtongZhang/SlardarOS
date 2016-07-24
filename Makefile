@@ -78,7 +78,7 @@ bootSector:
 bootLoader:
 	$(V) $(CXX) $(CXX_FLAGS) -nostdlib -c $(BOOT_DIR)/bootLoader.S -o $(BUILD_DIR)/bootLoader.S.o
 	$(V) $(CXX) $(CXX_FLAGS) -nostdlib -c $(BOOT_DIR)/bootLoader.cpp -o $(BUILD_DIR)/bootLoader.cpp.o
-	$(V) $(CXX) $(CXX_FLAGS) -nostdlib -N -e start -Ttext 0x9000 -o $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/bootLoader.S.o $(BUILD_DIR)/bootLoader.cpp.o
+	$(V) $(CXX) $(CXX_FLAGS) -nostdlib -N -e start -Ttext 0x700 -o $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/bootLoader.S.o $(BUILD_DIR)/bootLoader.cpp.o
 	$(V) $(OBJCOPY) -S -O binary $(BUILD_DIR)/bootLoader.o $(BUILD_DIR)/$(BOOT_LOADER_BIN)
 	$(V) $(OBJDUMP) -S -D $(BUILD_DIR)/bootLoader.o > $(BUILD_DIR)/bootLoader.dump
 	$(V) $(PYTHON) $(UTILS_DIR)/gdbCmd.py

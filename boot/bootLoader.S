@@ -5,16 +5,12 @@
 start:
 .code16
 	xorl %eax, %eax
-	# movw %ax, %ds
-	# movw %cs, %ax
 	movw %ax, %ds
 	movw %ax, %es
 	movw %ax, %ss
-	movl $0x500, %eax
-	movl %eax, %esp
+	movl $0x6ff, %eax
 	movl %eax, %ebp
-	movw $0x600, %ax
-	movw %ax, %es
+	movl %eax, %esp
 
 	movw $19, sectorNo
 	xorb %ah, %ah
@@ -149,18 +145,6 @@ movb %al, (%bx)
 add $3, %bx			# -> gdt + 8 + 7
 movb %ah, (%bx)
 
-# set selector for extra data
-# lea extraData, %eax
-# lea gdt, %ebx
-# add $0x28, %ebx
-# add $2, %ebx
-# movw %ax, (%bx)
-# shrl $16, %eax
-# add $2, %bx
-# movb %al, (%bx)
-# add $3, %bx
-# movb %ah, (%bx)
-
 cli
 inb $0x92, %al
 orb $0x02, %al
@@ -213,8 +197,7 @@ getFATEntry:
 	pushw %es
 	pushw %bx
 	pushw %ax
-	movw $BASE_OF_KERNEL, %ax
-	subw $0x100, %ax
+	movw $BASE_OF_FAT_ENTRY_AREA, %ax
 	movw %ax, %es
 	pop %ax
 	movw $0, isOdd
@@ -269,7 +252,7 @@ isOdd: .word 0
 gdt:
 	GDT_DESCRIPTOR(0, 0, 0)
 	GDT_DESCRIPTOR(0, 0xfff, GDT_CODE + GDT_32)					# code seg, set base addr in runtime
-	GDT_DESCRIPTOR(LMA_BASE_OF_KERNEL, 0x2fff, GDT_DATA_RW)		# kernel file data seg
+	GDT_DESCRIPTOR(LMA_BASE_OF_KERNEL, 0xffff, GDT_DATA_RW | GDT_4K)		# kernel file data seg
 	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_32 | GDT_4K)		# flat stack seg
 	GDT_DESCRIPTOR(KERNEL_BASE_ADDRESS, 0xffff, GDT_CODE + GDT_32)	# kernel code seg
 	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_4K)				# flat data seg

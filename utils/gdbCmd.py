@@ -15,13 +15,14 @@ gdbCmdFile.write('target remote localhost:1234\n')
 # gdbCmdFile.write('display /xh $ebp\n')
 # gdbCmdFile.write('display /xh $esp\n')
 # gdbCmdFile.write('b *0x7d14\n')
-# gdbCmdFile.write('b *0x9116\n')
+# gdbCmdFile.write('b *0x7f5\n')
 
 
 
 addr = None
 for line in dumpFile.readlines():
     pos = line.find('<protectModeCode>:')
+    # pos = line.find('<fileNameFound>:')
     if pos >= 0:
         addr = line[0:pos].strip()
         break
@@ -29,7 +30,7 @@ for line in dumpFile.readlines():
 # gdbCmdFile.write('b *0x' + addr + '\n')
 gdbCmdFile.write('b kernelMain\n')
 # gdbCmdFile.write('b memoryManage.cpp:29\n')
-gdbCmdFile.write('display /i $eip\n')
+# gdbCmdFile.write('display /i $eip\n')
 # gdbCmdFile.write('b *0x92ab\n')
 # gdbCmdFile.write('display /i 0x100000 + $eip\n')
 # gdbCmdFile.write('display /i 0x' + addr + ' + $eip\n')

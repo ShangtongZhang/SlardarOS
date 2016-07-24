@@ -1,7 +1,9 @@
 org  07c00h
 BaseOfStack		equ	07c00h
+BaseOfFATEntryArea equ 0100h
 
-BaseOfLoader		equ	0900h
+;Pay attention to getFATEntry when modify BaseOfLoader
+BaseOfLoader		equ	070h
 OffsetOfLoader		equ	0
 
 jmp short LABEL_START
@@ -203,8 +205,7 @@ GetFATEntry:
 	push	es
 	push	bx
 	push	ax
-	mov	ax, BaseOfLoader
-	sub	ax, 0100h
+	mov	ax, BaseOfFATEntryArea 
 	mov	es, ax
 	pop	ax
 	mov	byte [bOdd], 0

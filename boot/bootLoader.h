@@ -1,14 +1,26 @@
 #ifndef __BOOTLOADER_H
 #define __BOOTLOADER_H
 
-#define MEMORY_INFO_UNIT_SIZE 20
-#define BASE_OF_MEMORY_INFO 0x300
-#define LMA_BASE_OF_MEMEORY_INFO 0x3000
+/**
+ * Memory Map:
+ * 0x0600 - 0x6ff 	real mode stack
+ * 0x0700 - 0xcff 	loader.bin
+ * 0x0d00 - 0xfff 	memory info area
+ * 0x1000 - 0x1fff 	fat entry area
+ * 0x2000 -			kernel.bin
+ */
 
-#define BASE_OF_KERNEL 0xa00
-#define LMA_BASE_OF_KERNEL 0xa000
+#define MEMORY_INFO_UNIT_SIZE 20
+#define BASE_OF_MEMORY_INFO 0xd0
+#define LMA_BASE_OF_MEMEORY_INFO 0xd00
+
+// Pay attention to getFATEntry when modify BASE_OF_KERNEL
+#define BASE_OF_KERNEL 0x200
+#define LMA_BASE_OF_KERNEL 0x2000
 #define OFFSET_OF_KERNEL 0
 #define KERNEL_BASE_ADDRESS 0x100000
+
+#define BASE_OF_FAT_ENTRY_AREA 0x100
 
 #define BPB_SEC_PER_TRK 18
 #define BS_DRV_NUM 0
