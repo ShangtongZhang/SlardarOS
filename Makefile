@@ -47,7 +47,7 @@ KERNEL_BIN := kernel.bin
 
 KERNEL_INC_DIR := .
 KERNEL_LIB_DIR := .
-KERNEL_DIR := kernel/init kernel/mem kernel/io kernel/utils
+KERNEL_DIR = $(wildcard kernel/*) 
 KERNEL_SRC = $(foreach dir,$(subst :, ,$(KERNEL_DIR)),$(wildcard $(dir)/*.cpp))
 KERNEL_OBJ_DIR = $(addprefix $(BUILD_DIR)/,$(subst :, ,$(KERNEL_DIR)))
 KERNEL_OBJS = $(addprefix $(BUILD_DIR)/,$(subst .cpp,.o,$(KERNEL_SRC)))
