@@ -3,6 +3,7 @@
 #include "utils/utils.h"
 #include "new"
 #include "test/assert.hpp"
+#include "test/test.hpp"
 
 void initBssVariables() {
 	new (&os::cout) os::VideoOutStream;
@@ -10,8 +11,9 @@ void initBssVariables() {
 
 extern "C" int kernelMain() {
 	initBssVariables();
-	assert(1 == 3);
-	initMemory();
+	performUnitTests();
+
+	// initMemory();
 	while (true) {}
 	return 0;
 }
