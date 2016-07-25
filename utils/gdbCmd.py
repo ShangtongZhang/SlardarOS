@@ -21,8 +21,8 @@ gdbCmdFile.write('target remote localhost:1234\n')
 
 addr = None
 for line in dumpFile.readlines():
-    pos = line.find('<protectModeCode>:')
-    # pos = line.find('<fileNameFound>:')
+    # pos = line.find('<protectModeCode>:')
+    pos = line.find('<fileNameFound>:')
     if pos >= 0:
         addr = line[0:pos].strip()
         break

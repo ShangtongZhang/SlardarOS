@@ -3,7 +3,7 @@
 #include "utils.h"
 #include "mem/memoryManage.h"
 #include "vector"
-// #include "string"
+#include "string"
 
 namespace os {
 namespace mem {
@@ -52,10 +52,10 @@ bool operator != (const PlainAllocator<T>&, const PlainAllocator<T>&) {
 template <typename T>
 using vector = std::vector<T, mem::PlainAllocator<T>>;
 
-// template <typename T>
-// using basic_string = std::basic_string<T, std::char_traits<T>, mem::PlainAllocator<T>>;
+template <typename T>
+using basic_string = std::basic_string<T, std::char_traits<T>, mem::PlainAllocator<T>>;
 
-// using string = basic_string<char>;
+using string = basic_string<char>;
 
 }
 

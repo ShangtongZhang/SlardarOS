@@ -15,9 +15,9 @@
 #define LMA_BASE_OF_MEMEORY_INFO 0xd00
 
 // Pay attention to getFATEntry when modify BASE_OF_KERNEL
-#define BASE_OF_KERNEL 0x200
+#define BASE_OF_KERNEL 0
 #define LMA_BASE_OF_KERNEL 0x2000
-#define OFFSET_OF_KERNEL 0
+#define OFFSET_OF_KERNEL 0x2000
 #define KERNEL_BASE_ADDRESS 0x100000
 
 #define BASE_OF_FAT_ENTRY_AREA 0x100

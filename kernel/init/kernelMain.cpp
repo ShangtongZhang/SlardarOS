@@ -15,9 +15,10 @@ extern "C" int kernelMain() {
 
 	initMemory();
 
-	// os::string s1("Hello");
-	// os::string s2("World!");
-	// os::string s3 = s1 + " " + s2;
+	os::string s1("Hello");
+	os::string s2("World!");
+	os::string s3 = s1 + " " + s2;
+	size_t cnt = s3.size();
 	os::vector<int> v{2, 3, 4};
 	int sum = 0;
 	for (auto it = v.begin(); it < v.end(); ++it) {

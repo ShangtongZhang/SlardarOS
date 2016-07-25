@@ -99,8 +99,19 @@ goOnLoadingFile:
 	movw $ROOT_DIR_SECTORS, %dx
 	addw %dx, %ax
 	addw $DELTA_SECTOR_NUM, %ax
+	cmpw $0xfe00, %bx
+	jz moveToNewSeg 
 	addw $BPB_BYTES_PER_SEC, %bx
 	jmp goOnLoadingFile
+moveToNewSeg:
+	pushw %ax
+	movw %es, %ax
+	addw $0x1000, %ax
+	movw %ax, %es
+	popw %ax
+	xorw %bx, %bx
+	jmp goOnLoadingFile
+
 
 fileLoaded:
 	# jmp fileLoaded
@@ -159,6 +170,7 @@ movl %eax, %cr0
 xorl %eax, %eax
 movw $SELECTOR_FLAT_DATA_SEG, %ax
 mov %ax, %ds
+mov %ax, %es
 xorl %esi, %esi
 mov $SELECTOR_FLAT_STACK_SEG, %ax
 mov %ax, %ss
