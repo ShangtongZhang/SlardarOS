@@ -29,7 +29,7 @@ for line in dumpFile.readlines():
 
 # gdbCmdFile.write('b *0x' + addr + '\n')
 gdbCmdFile.write('b kernelMain\n')
-gdbCmdFile.write('b plainMemoryManagerTestBasic\n')
+# gdbCmdFile.write('b plainMemoryManagerTestBasic\n')
 # gdbCmdFile.write('display /i $eip\n')
 # gdbCmdFile.write('b *0x92ab\n')
 # gdbCmdFile.write('display /i 0x100000 + $eip\n')

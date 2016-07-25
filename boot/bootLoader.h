@@ -48,7 +48,8 @@
 #define SELECTOR_FLAT_DATA_SEG 0x28
 #define SELECTOR_FLAT_CODE_SEG 0x30
 
-#define TOP_OF_STACK 0x200000
+#define TOP_OF_STACK 0x1fffff
+#define BASE_OF_HEAP 0x200000
 
 #define DPL0 0x00
 #define DPL1 0x20

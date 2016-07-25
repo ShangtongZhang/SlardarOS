@@ -3,7 +3,8 @@
 #include "test/test.hpp"
 
 void initBssVariables() {
-	new (&os::cout) os::VideoOutStream;
+	new (&os::mem::memoryManager) os::mem::PlainMemoryManager{};
+	new (&os::cout) os::VideoOutStream{};
 }
 
 extern "C" int kernelMain() {
@@ -11,6 +12,7 @@ extern "C" int kernelMain() {
 	performUnitTests();
 
 	initMemory();
+
 	while (true) {}
 	return 0;
 }

@@ -1,16 +1,32 @@
 #ifndef __MEMORY_MANAGE_H
 #define __MEMORY_MANAGE_H
-#include "defs.h"
+#include "utils/utils.h"
+#include "plainMemoryManager.hpp"
 
-class MemoryInfoUnit {
-public:
-	uint32_t baseAddrLow;
-	uint32_t baseAddrHigh;
-	uint32_t lengthLow;
-	uint32_t lengthHigh;
-	uint32_t flag;
-	static uint32_t flagAvailable;
-};
+namespace os {
+namespace mem {
+
+	// global memory manager
+	extern MemoryManager& memoryManager;
+
+	class MemoryInfoUnit {
+	public:
+		uint32_t baseAddrLow;
+		uint32_t baseAddrHigh;
+		uint32_t lengthLow;
+		uint32_t lengthHigh;
+		uint32_t flag;
+		enum MemoryType {
+			undefined = 0,
+			available = 1,
+			reserved = 2
+		};
+	};
+
+}
+}
+
+
 
 const int PAGE_DIR_SIZE = 0x400;
 const int PAGE_TABLE_SIZE = 0x400;
