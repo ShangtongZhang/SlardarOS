@@ -1,5 +1,5 @@
-#ifndef __ASSERT_HPP
-#define __ASSERT_HPP
+#ifndef __ASSERT_H
+#define __ASSERT_H
 #include "io/io.h"
 
 #ifdef NO_DEBUG
@@ -8,8 +8,6 @@
 #define assert(EX) (void)((EX) || (__assert (#EX, __FILE__, __LINE__),0))
 #endif
 
-void __assert (const char *msg, const char *file, int line) {
-	os::cout << msg;
-}
+void __assert (const char *msg, const char *file, int line);
 
 #endif

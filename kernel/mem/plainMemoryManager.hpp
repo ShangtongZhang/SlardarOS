@@ -1,7 +1,7 @@
 #ifndef __PLAIN_MEMORY_MANAGER_HPP
 #define __PLAIN_MEMORY_MANAGER_HPP
+#include "utils/utils.h"
 #include "memoryManager.hpp"
-#include "new"
 
 namespace os {
 namespace mem {
@@ -10,8 +10,13 @@ namespace hidden {
 
 class MemoryChunk {
 public:
+
+	/**
+	 * @startAddr and @size doesn't contain sizeof(MemoryChunk)
+	 */
 	uint8_t* startAddr;
 	size_t size;
+
 	bool available;
 	MemoryChunk* nextChunk;
 	MemoryChunk* lastChunk;
@@ -25,19 +30,20 @@ public:
 
 	}
 
-	MemoryChunk* split(size_t demanded) {
-		size_t reserved = size - demanded;
-		MemoryChunk* newChunk = reinterpret_cast<MemoryChunk*>(startAddr + reserved);
-		// assert(reserved + sizeof(MemoryChunk) < size);
-		new (newChunk) MemoryChunk(newChunk, demanded);
+	// @demanded_: it should contain sizeof(MemoryChunk)
+	MemoryChunk* split(size_t demanded_) {
+		assert(demanded_ <= size);
+		size_t demanded = demanded_ - sizeof(MemoryChunk);
+		MemoryChunk* newChunk = reinterpret_cast<MemoryChunk*>(startAddr + demanded);
+		new (newChunk) MemoryChunk(newChunk, size - demanded);
 		newChunk->lastChunk = this;
 		newChunk->nextChunk = nextChunk;
 		nextChunk = newChunk;
 		if (newChunk->nextChunk != nullptr) {
 			newChunk->nextChunk->lastChunk = newChunk;
 		}
-		size = reserved;
-		return newChunk;
+		size = demanded;
+		return this;
 	}
 
 	void* getMemoryPtr() {
@@ -70,12 +76,13 @@ public:
 		MC* curMC = headMemoryChunks;
 		while (curMC != nullptr) {
 			if (curMC->available && curMC->size >= size) {
-				MC* newMC = curMC->split(size);
-				newMC->available = false;
+				curMC->split(size);
+				curMC->available = false;
+				MC* newMC = curMC->nextChunk;
 				if (newMC->nextChunk == nullptr) {
 					tailMemoryChunks = newMC;
 				}
-				return newMC->getMemoryPtr();
+				return curMC->getMemoryPtr();
 			}
 			curMC = curMC->nextChunk;
 		}
