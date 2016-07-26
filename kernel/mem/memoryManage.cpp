@@ -52,3 +52,27 @@ void initMemory() {
 	// 		::"r"(pageDirAddr)
 	// 		:"%eax");
 }
+
+void* operator new (size_t count) {
+	return os::mem::memoryManager.allocateMemory(count);
+}
+
+void* operator new[] (size_t count) {
+	return os::mem::memoryManager.allocateMemory(count);
+}
+
+void operator delete (void* ptr) {
+	os::mem::memoryManager.freeMemory(ptr);
+}
+
+void operator delete (void* ptr, size_t) {
+	os::mem::memoryManager.freeMemory(ptr);
+}
+
+void operator delete[] (void* ptr) {
+	os::mem::memoryManager.freeMemory(ptr);
+}
+
+void operator delete[] (void* ptr, size_t) {
+	os::mem::memoryManager.freeMemory(ptr);
+}

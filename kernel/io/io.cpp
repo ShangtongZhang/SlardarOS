@@ -1,23 +1,16 @@
 #include "io.h"
 
 namespace os {
+namespace io {
 
 VideoOutStream videoOutStream;
-IOStream& cout(videoOutStream);
+VideoOutStream& cout(videoOutStream);
 
-IOStream::IOStream() : color(0x07) {}
+ClearScreen clearScreen;
+ClearScreen& cls(clearScreen);
 
-VideoOutStream::VideoOutStream() : videoAddr((char*)0xb8000) {}
-void VideoOutStream::out(const char* data) {
-	char* video = videoAddr;
-	while (*data != 0) {
-		*video++ = *data++;
-		*video++ = color;
-	}
+EndLine endLine;
+EndLine& endl(endLine);
+
 }
-
-void operator << (IOStream& iostream, const char* data) {
-	iostream.out(data);
-}
-
 }

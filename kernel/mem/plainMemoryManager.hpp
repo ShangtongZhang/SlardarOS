@@ -1,7 +1,10 @@
 #ifndef __PLAIN_MEMORY_MANAGER_HPP
 #define __PLAIN_MEMORY_MANAGER_HPP
-#include "utils/utils.h"
+#include "defs.h"
+#include "test/assert.h"
 #include "memoryManager.hpp"
+
+#include "new"
 
 namespace os {
 namespace mem {

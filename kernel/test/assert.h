@@ -1,6 +1,5 @@
 #ifndef __ASSERT_H
 #define __ASSERT_H
-#include "io/io.h"
 
 #ifdef NO_DEBUG
 #define assert(EX)
