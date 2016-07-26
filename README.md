@@ -1,6 +1,10 @@
 # SlardarOS
 >Just a toy OS
 
+## Features:
+* support STL container
+* support C++14 
+
 ## Dependency:
 * nasm >= 0.98
 * qemu >= 2.9.0
