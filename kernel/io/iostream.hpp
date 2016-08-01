@@ -86,7 +86,7 @@ IOStream& operator << (IOStream& iostream, const EndLine&);
 
 VideoOutStream& operator << (VideoOutStream& vos, const ClearScreen&);
 
-}
-}
+} // io
+} // os
 
 #endif

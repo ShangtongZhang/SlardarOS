@@ -20,6 +20,11 @@ string to_string(int value, size_t base =  10);
 string to_string(const char* data);
 string to_string(char data);
 
+template <typename T>
+string to_string(const T& data) {
+	return data.toString();
+}
+
 }
 
 #endif

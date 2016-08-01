@@ -33,6 +33,7 @@ GDB := i386-linux-gdb
 MKDIR := mkdir
 PYTHON := python
 V := @
+HIDDEN := >& /dev/null
 KERNEL_ENTRY := kernelMain
 
 BUILD_DIR := generated
@@ -96,13 +97,13 @@ $(BUILD_DIR)/%.o: %.cpp
 osComps: buildDir bootSector bootLoader
 
 osImage: clean osComps kernel
-	$(V) $(DD) if=/dev/zero of=$(BUILD_DIR)/$(EMPTY_IMAGE) bs=512 count=2880
-	$(V) $(DD) if=$(BUILD_DIR)/$(BOOT_SECTOR_BIN) of=$(BUILD_DIR)/$(OS_IMAGE) bs=512 count=1
-	$(V) $(DD) if=$(BUILD_DIR)/$(EMPTY_IMAGE) of=$(BUILD_DIR)/$(OS_IMAGE) skip=1 seek=1 bs=512 count=2879
-	$(V) $(HD) attach $(BUILD_DIR)/$(OS_IMAGE)
+	$(V) $(DD) if=/dev/zero of=$(BUILD_DIR)/$(EMPTY_IMAGE) bs=512 count=2880 $(HIDDEN)
+	$(V) $(DD) if=$(BUILD_DIR)/$(BOOT_SECTOR_BIN) of=$(BUILD_DIR)/$(OS_IMAGE) bs=512 count=1 $(HIDDEN)
+	$(V) $(DD) if=$(BUILD_DIR)/$(EMPTY_IMAGE) of=$(BUILD_DIR)/$(OS_IMAGE) skip=1 seek=1 bs=512 count=2879 $(HIDDEN)
+	$(V) $(HD) attach $(BUILD_DIR)/$(OS_IMAGE) $(HIDDEN)
 	$(V) $(CP) $(BUILD_DIR)/$(BOOT_LOADER_BIN) $(MOUNT_DIR)/$(BOOT_LOADER_BIN)
 	$(V) $(CP) $(BUILD_DIR)/$(KERNEL_BIN) $(MOUNT_DIR)/$(KERNEL_BIN)
-	$(V) $(HD) detach $(MOUNT_DIR)
+	$(V) $(HD) detach $(MOUNT_DIR) $(HIDDEN)
 
 
 buildDir:

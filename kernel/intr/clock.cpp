@@ -5,7 +5,7 @@
 
 void clockIntrHandler() {
 	os::utils::clock++;
-	os::io::cout << os::io::cls << os::utils::clock.getTime();
+	// os::io::cout << os::io::cls << os::utils::clock;
 	outb(END_OF_INTR, MASTER_8259A_PORT);
 	ISR_RETURN;
 }

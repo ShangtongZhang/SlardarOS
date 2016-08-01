@@ -19,11 +19,11 @@ public:
 		return *this;
 	}
 
-	uint32_t getTime () {
+	uint32_t getTime () const {
 		return time;
 	}
 
-	os::string toString () {
+	os::string toString () const {
 		return os::to_string(time);
 	}
 
