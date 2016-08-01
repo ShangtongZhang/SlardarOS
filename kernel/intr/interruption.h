@@ -2,6 +2,8 @@
 #define __INTERRUPTION_H
 #include "defs.h"
 
+#define ISR_RETURN __asm__("leave;iret")
+
 class GateDescriptor {
 private:
 	uint16_t selector;
@@ -9,8 +11,14 @@ private:
 	uint8_t attr;
 	uint8_t paramCount;
 public:
-	GateDescriptor(uint16_t selector_, uint32_t offset_, uint8_t attr_, uint8_t paramCount_ = 0) :
-		selector(selector_), offset(offset_), attr(attr_), paramCount(paramCount_) {
+	template <typename T>
+	GateDescriptor(T* offset_, 
+		uint16_t selector_ = static_cast<uint16_t>(SELECTOR_FLAT_CODE_SEG),
+		uint8_t attr_ = static_cast<uint8_t>(GateAttr::interruptionGate), 
+		uint8_t paramCount_ = 0) :
+		selector(selector_), 
+		offset(reinterpret_cast<uint32_t>(offset_)), 
+		attr(attr_), paramCount(paramCount_) {
 
 	}
 
@@ -40,15 +48,17 @@ public:
 void initInterruption();
 
 constexpr size_t IDT_SIZE = 256;
-constexpr size_t GDT_SELECTOR_CODE = 0x20;
-constexpr uint16_t M8259A_PORT1 = 0x20;
-constexpr uint16_t M8259A_PORT2 = 0x21;
-constexpr uint16_t S8259A_PORT1 = 0xa0;
-constexpr uint16_t S8259A_PORT2 = 0xa1;
+constexpr uint16_t MASTER_8259A_PORT = 0x20;
+constexpr uint16_t SlAVE_8259A_PORT = 0xa0;
+
 constexpr uint8_t IRQ0_VECTOR = 0x20;
 constexpr uint8_t IRQ8_VECTOR = 0x28;
 constexpr uint8_t CLOCK_VECTOR = IRQ0_VECTOR;
+
 constexpr uint8_t OCW_CLOCK = 0x1;
+
+constexpr uint8_t END_OF_INTR = 0x20;
+
 extern uint64_t idt[IDT_SIZE];
 
 #endif

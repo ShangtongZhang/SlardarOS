@@ -31,6 +31,7 @@ for line in dumpFile.readlines():
 # gdbCmdFile.write('b *0x' + addr + '\n')
 gdbCmdFile.write('b kernelMain\n')
 gdbCmdFile.write('b initInterruption\n')
+gdbCmdFile.write('b initPIT\n')
 # gdbCmdFile.write('b plainMemoryManagerTestBasic\n')
 # gdbCmdFile.write('display /i $eip\n')
 # gdbCmdFile.write('b *0x92ab\n')
