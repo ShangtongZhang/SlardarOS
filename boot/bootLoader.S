@@ -264,11 +264,9 @@ isOdd: .word 0
 gdt:
 	GDT_DESCRIPTOR(0, 0, 0)
 	GDT_DESCRIPTOR(0, 0xfff, GDT_CODE + GDT_32)					# code seg, set base addr in runtime
-	GDT_DESCRIPTOR(LMA_BASE_OF_KERNEL, 0xffff, GDT_DATA_RW | GDT_4K)		# kernel file data seg
-	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_32 | GDT_4K)		# flat stack seg
-	GDT_DESCRIPTOR(KERNEL_BASE_ADDRESS, 0xffff, GDT_CODE + GDT_32)	# kernel code seg
-	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_4K)				# flat data seg
-	GDT_DESCRIPTOR(0, 0xfffff, GDT_CODE | GDT_32 | GDT_4K)	# flat code seg
+	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_32 | GDT_4K)	# flat stack seg
+	GDT_DESCRIPTOR(0, 0xfffff, GDT_DATA_RW | GDT_4K)			# flat data seg
+	GDT_DESCRIPTOR(0, 0xfffff, GDT_CODE | GDT_32 | GDT_4K)		# flat code seg
 gdtPtr:
-	.word 0x37
+	.word 0x27
 	.long gdt
