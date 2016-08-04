@@ -2,6 +2,7 @@
 #include "sys/io.h"
 #include "utils/utils.h"
 #include "clock.h"
+#include "mem/virtualMemory.h"
 
 uint64_t idt[IDT_SIZE];
 
@@ -39,6 +40,7 @@ void initIDT() {
 
 void installISR() {
 	idt[CLOCK_VECTOR] = GateDescriptor(clockIntrHandler);
+	idt[PAGE_FAULT_VECTOR] = GateDescriptor(pageFaultHandler);
 }
 
 void initInterruption() {

@@ -54,6 +54,7 @@ constexpr uint16_t SlAVE_8259A_PORT = 0xa0;
 constexpr uint8_t IRQ0_VECTOR = 0x20;
 constexpr uint8_t IRQ8_VECTOR = 0x28;
 constexpr uint8_t CLOCK_VECTOR = IRQ0_VECTOR;
+constexpr uint8_t PAGE_FAULT_VECTOR = 0xe;
 
 constexpr uint8_t OCW_CLOCK = 0x1;
 

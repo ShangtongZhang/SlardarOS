@@ -92,6 +92,53 @@ public:
 		return nullptr;
 	}
 
+	void* allocateMemory(size_t size_, uint32_t alignment_) {
+		MC* curMC = headMemoryChunks;
+		while (curMC != nullptr) {
+			if (curMC->available) {
+				uint8_t* startAddr = curMC->startAddr;
+				startAddr += sizeof(MC);
+				uint32_t realStartAddr = reinterpret_cast<uint32_t>(startAddr);
+				realStartAddr = (realStartAddr / alignment_ + 1) * alignment_;
+				uint8_t* realEndAddr = reinterpret_cast<uint8_t*>(realStartAddr + size_ + sizeof(MC));
+				if (curMC->startAddr + curMC->size >= realEndAddr) {
+					assert(realStartAddr % alignment_ == 0);
+					void* demandedMCAddr = reinterpret_cast<void*>(realStartAddr - sizeof(MC));
+					assert(static_cast<uint8_t*>(demandedMCAddr) >= curMC->startAddr);
+					MC* demandedMC = new (demandedMCAddr) MC (demandedMCAddr, size_ + sizeof(MC));
+					assert(demandedMC);
+					demandedMC->available = false;
+
+					void* remainedMCAddr = reinterpret_cast<void*>(realStartAddr + size_);
+					size_t remainedMCSize = curMC->startAddr + curMC->size - static_cast<uint8_t*>(remainedMCAddr);
+					assert(remainedMCSize > sizeof(MC));
+					MC* remainedMC = new (remainedMCAddr) MC (remainedMCAddr, remainedMCSize);
+					assert(remainedMC);
+
+					curMC->size = static_cast<uint8_t*>(demandedMCAddr) - curMC->startAddr;
+
+					demandedMC->nextChunk = remainedMC;
+					demandedMC->lastChunk = curMC;
+
+					remainedMC->nextChunk = curMC->nextChunk;
+					remainedMC->lastChunk = demandedMC;
+
+					curMC->nextChunk = demandedMC;
+					if (remainedMC->nextChunk != nullptr) {
+						remainedMC->nextChunk->lastChunk = remainedMC;
+					} else {
+						tailMemoryChunks = remainedMC;
+					}
+
+					return demandedMC->getMemoryPtr();
+				}
+			}
+			curMC = curMC->nextChunk;
+		}
+		return nullptr;
+
+	}
+
 	void freeMemory(void* ptr) override {
 		MC* curMC = reinterpret_cast<MC*>(static_cast<uint8_t*>(ptr) - sizeof(MC));
 		curMC->available = true;
@@ -133,6 +180,10 @@ public:
 				tailMemoryChunks = curMC;
 			}
 		}
+	}
+
+	uint32_t maxAddress() {
+		return reinterpret_cast<uint32_t>(tailMemoryChunks->startAddr + tailMemoryChunks->size - 1);
 	}
 
 };
