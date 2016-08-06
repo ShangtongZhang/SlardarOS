@@ -3,12 +3,54 @@
 #include "utils/utils.h"
 #include "clock.h"
 #include "mem/virtualMemory.h"
+#include "array"
+
+std::function<void()> intrHandlers[IDT_SIZE];
+
+bool hasErrorCode(uint32_t intrNo) {
+	switch (intrNo) {
+		case 8:
+		case 10:
+		case 11:
+		case 12:
+		case 13:
+		case 14:
+		case 17:
+		case 30:
+			return true;
+			break;
+		default:
+			return false;
+			break;
+	}
+}
+
+template <uint32_t intrNo>
+void intrHandlerProxy() {
+	__asm__("pushal");
+	if (intrHandlers[intrNo]) {
+		intrHandlers[intrNo]();
+	}
+	__asm__("popal");
+	__asm__("leave");
+	if (hasErrorCode(intrNo)) {
+		__asm__("addl $4, %%esp":::"%esp");
+	}
+	__asm__("iret");
+}
+
+template <typename Is>
+class intrHandlerHelper;
+
+template <size_t ... Is>
+class intrHandlerHelper<std::index_sequence<Is...>> {
+public:
+  static constexpr std::array<IntrHandler, sizeof...(Is)> makeIntrHandlers() {
+    return {{ &intrHandlerProxy<Is> ... }};
+  }
+};
 
 uint64_t idt[IDT_SIZE];
-
-void defaultIntrHandler() {
-	while (true) {}
-}
 
 void init8259A() {
 	// Initialization Command Word 1
@@ -33,21 +75,18 @@ void init8259A() {
 }
 
 void initIDT() {
+	constexpr std::array<IntrHandler, IDT_SIZE> intrHandlers = 
+		intrHandlerHelper<std::make_index_sequence<IDT_SIZE>>::makeIntrHandlers();
+	auto intrHandlersAddr = intrHandlers.data();
 	for (size_t i = 0; i < IDT_SIZE; ++i) {
-		idt[i] = GateDescriptor(defaultIntrHandler);
+		idt[i] = GateDescriptor(intrHandlersAddr[i]);
 	}
-}
-
-void installISR() {
-	idt[CLOCK_VECTOR] = GateDescriptor(clockIntrHandler);
-	idt[PAGE_FAULT_VECTOR] = GateDescriptor(pageFaultHandler);
 }
 
 void initInterruption() {
 	init8259A();
 	initClock();
 	initIDT();
-	installISR();
 
 	class __attribute__((__packed__)) {
 	public:

@@ -1,8 +1,7 @@
 #ifndef __INTERRUPTION_H
 #define __INTERRUPTION_H
 #include "defs.h"
-
-#define ISR_RETURN __asm__("leave;iret")
+#include "functional"
 
 class GateDescriptor {
 private:
@@ -46,6 +45,7 @@ public:
 };
 
 void initInterruption();
+typedef void (*IntrHandler) ();
 
 constexpr size_t IDT_SIZE = 256;
 constexpr uint16_t MASTER_8259A_PORT = 0x20;
@@ -53,13 +53,17 @@ constexpr uint16_t SlAVE_8259A_PORT = 0xa0;
 
 constexpr uint8_t IRQ0_VECTOR = 0x20;
 constexpr uint8_t IRQ8_VECTOR = 0x28;
-constexpr uint8_t CLOCK_VECTOR = IRQ0_VECTOR;
-constexpr uint8_t PAGE_FAULT_VECTOR = 0xe;
+
+enum Interruption {
+	clock = IRQ0_VECTOR,
+	pageFault = 0xe
+};
 
 constexpr uint8_t OCW_CLOCK = 0x1;
 
 constexpr uint8_t END_OF_INTR = 0x20;
 
 extern uint64_t idt[IDT_SIZE];
+extern std::function<void()> intrHandlers[IDT_SIZE];
 
 #endif

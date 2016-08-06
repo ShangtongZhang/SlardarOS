@@ -7,8 +7,12 @@
 #include "intr/interruption.h"
 
 void initBssVariables() {
+	for (size_t i = 0; i < IDT_SIZE; ++i) {
+		new (intrHandlers + i) std::function<void()>{};
+	}
 	new (&os::mem::memoryManager) os::mem::PlainMemoryManager{};
 	new (&os::io::cout) os::io::VideoOutStream{};
+	new (&os::utils::clock) os::utils::Clock{};
 }
 
 extern "C" int kernelMain() {

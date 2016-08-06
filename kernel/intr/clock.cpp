@@ -3,14 +3,14 @@
 #include "utils/utils.h"
 #include "clock.h"
 
-void clockIntrHandler() {
+void clockHandler() {
 	os::utils::clock++;
-	// os::io::cout << os::io::cls << os::utils::clock;
+	os::io::cout << os::io::cls << os::utils::clock;
 	outb(END_OF_INTR, MASTER_8259A_PORT);
-	ISR_RETURN;
 }
 
 void initPIT() {
+	intrHandlers[Interruption::clock] = clockHandler;
 	outb(PIT_PORT_MODE, PIT_SELECTOR_0 | PIT_RATE_GEN | PIT_16BIT);
 	uint8_t low8Bit = (PIT_FREQ / PIT_DEMANDED_INTERVAL) & 0x00ff;
 	uint8_t high8Bit = static_cast<uint8_t>(((PIT_FREQ / PIT_DEMANDED_INTERVAL) & 0xff00) >> 8);

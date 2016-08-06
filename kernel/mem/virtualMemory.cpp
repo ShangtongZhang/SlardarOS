@@ -32,7 +32,7 @@ uint32_t initPageDirectory(uint32_t maxAddress) {
 		pageTable[i] = PTE;
 		PTE += PAGE_SIZE;
 	}
-	PTE = 0 | PAGE_P | PAGE_US_S | PAGE_RW_W;
+	PTE = 0 | PAGE_NP | PAGE_US_S | PAGE_RW_W;
 	for (size_t i = nPTE; i < nPageTables * ENTRY_PER_PAGE_TABLE; ++i) {
 		pageTable[i] = PTE;
 	}
@@ -40,7 +40,9 @@ uint32_t initPageDirectory(uint32_t maxAddress) {
 }
 
 void initVirtualMemory() {
-	uint32_t maxAddress = os::mem::memoryManager.maxAddress();
+	intrHandlers[Interruption::pageFault] = pageFaultHandler;
+	// uint32_t maxAddress = os::mem::memoryManager.maxAddress();
+	uint32_t maxAddress = END_OF_KENEL_SPACE - 1;
 	uint32_t pageDirAddr = initPageDirectory(maxAddress);
 	__asm__("movl %0, %%eax;"
 			"movl %%eax, %%cr3;"
@@ -49,10 +51,9 @@ void initVirtualMemory() {
 			"movl %%eax, %%cr0;"
 			::"r"(pageDirAddr)
 			:"%eax");
-	__asm__("movl 0x4fffffff, %%eax"
-			:::"%eax");
+	// __asm__("movl 0x2000005, %%eax"
+	// 		:::"%eax");
 }
 
 void pageFaultHandler() {
-	ISR_RETURN;
 }

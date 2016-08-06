@@ -10,6 +10,6 @@ constexpr uint8_t PIT_RATE_GEN = 0x04;
 constexpr uint8_t PIT_16BIT = 0x30;
 
 void initClock();
-void clockIntrHandler();
+void clockHandler();
 
 #endif
