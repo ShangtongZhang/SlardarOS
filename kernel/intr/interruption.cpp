@@ -1,11 +1,16 @@
 #include "interruption.h"
 #include "sys/io.h"
 #include "utils/utils.h"
-#include "clock.h"
 #include "mem/virtualMemory.h"
 #include "array"
 
-std::function<void()> intrHandlers[IDT_SIZE];
+namespace os {
+namespace intr {
+
+namespace hidden {
+
+uint64_t idt[IDT_SIZE];
+typedef void (*IntrHandler) ();
 
 bool hasErrorCode(uint32_t intrNo) {
 	switch (intrNo) {
@@ -50,8 +55,6 @@ public:
   }
 };
 
-uint64_t idt[IDT_SIZE];
-
 void init8259A() {
 	// Initialization Command Word 1
 	outb(0x11, MASTER_8259A_PORT);
@@ -83,10 +86,13 @@ void initIDT() {
 	}
 }
 
-void initInterruption() {
-	init8259A();
-	initClock();
-	initIDT();
+} // hidden
+
+std::function<void()> intrHandlers[IDT_SIZE];
+
+void initIntr() {
+	hidden::init8259A();
+	hidden::initIDT();
 
 	class __attribute__((__packed__)) {
 	public:
@@ -94,8 +100,15 @@ void initInterruption() {
 		uint32_t addr;
 	} op;
 	op.length = IDT_SIZE * sizeof(uint64_t) - 1;
-	op.addr = reinterpret_cast<uint32_t>(idt);
+	op.addr = reinterpret_cast<uint32_t>(hidden::idt);
 	__asm__("lidt (%0);"
 			"sti"
 			::"p"(&op));
 }
+
+void endInterruption() {
+	outb(hidden::END_OF_INTR, hidden::MASTER_8259A_PORT);
+}
+
+} // intr
+} // os

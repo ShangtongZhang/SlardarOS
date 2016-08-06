@@ -1,8 +1,20 @@
 #include "virtualMemory.h"
-#include "memoryManage.h"
+#include "memory.h"
 #include "intr/interruption.h"
 
+namespace os {
+namespace mem {
+namespace vm {
+
+namespace hidden {
+
+void pageFaultHandler() {
+}
+
+} // hidden
+
 uint32_t initPageDirectory(uint32_t maxAddress) {
+	using namespace hidden;
 	uint32_t nPages = maxAddress / PAGE_SIZE + 1;
 	uint32_t nPTE = nPages;
 	uint32_t nPageTables = nPTE / ENTRY_PER_PAGE_TABLE + 1;
@@ -39,8 +51,8 @@ uint32_t initPageDirectory(uint32_t maxAddress) {
 	return pageDirBaseAddr;
 }
 
-void initVirtualMemory() {
-	intrHandlers[Interruption::pageFault] = pageFaultHandler;
+void initVM() {
+	os::intr::intrHandlers[os::intr::Interruption::pageFault] = hidden::pageFaultHandler;
 	// uint32_t maxAddress = os::mem::memoryManager.maxAddress();
 	uint32_t maxAddress = END_OF_KENEL_SPACE - 1;
 	uint32_t pageDirAddr = initPageDirectory(maxAddress);
@@ -51,9 +63,10 @@ void initVirtualMemory() {
 			"movl %%eax, %%cr0;"
 			::"r"(pageDirAddr)
 			:"%eax");
-	// __asm__("movl 0x2000005, %%eax"
-	// 		:::"%eax");
+	__asm__("movl 0x2000005, %%eax"
+			:::"%eax");
 }
 
-void pageFaultHandler() {
-}
+} // vm
+} // mem
+} // os

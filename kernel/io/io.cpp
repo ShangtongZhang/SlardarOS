@@ -6,11 +6,9 @@ namespace io {
 VideoOutStream videoOutStream;
 VideoOutStream& cout(videoOutStream);
 
-ClearScreen clearScreen;
-ClearScreen& cls(clearScreen);
+ClearScreen cls;
 
-EndLine endLine;
-EndLine& endl(endLine);
+EndLine endl;
 
-}
-}
+} // io
+} // os

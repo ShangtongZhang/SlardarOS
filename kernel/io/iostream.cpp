@@ -17,5 +17,5 @@ VideoOutStream& operator << (VideoOutStream& videoOutStream, const ClearScreen&)
 	return videoOutStream.clearScreen();
 }
 
-}
-}
+} // io
+} // os

@@ -26,7 +26,7 @@ public:
 	//virtual ~MemoryManager();
 };
 
-}
-}
+} // mem
+} // os
 
 #endif

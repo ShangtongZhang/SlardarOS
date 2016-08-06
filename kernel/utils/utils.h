@@ -3,15 +3,12 @@
 #include "defs.h"
 #include "io/io.h"
 #include "test/assert.h"
-#include "clock.hpp"
-
 #include "new"
 
 namespace os {
 namespace utils {
 
-extern Clock clock;
+} // utils
+} // os
 
-}
-}
 #endif

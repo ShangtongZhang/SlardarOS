@@ -7,10 +7,10 @@ namespace os {
 namespace io {
 
 extern VideoOutStream& cout;
-extern ClearScreen& cls;
-extern EndLine& endl;
+extern ClearScreen cls;
+extern EndLine endl;
 
-}
-}
+} // io
+} // os
 
 #endif

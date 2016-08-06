@@ -1,10 +1,10 @@
 #ifndef __CLOCK_HPP
 #define __CLOCK_HPP
 #include "defs.h"
-#include "stl.hpp"
+#include "utils/stl.hpp"
 
 namespace os {
-namespace utils {
+namespace clock {
 
 class Clock {
 private:
@@ -29,7 +29,7 @@ public:
 
 };
 
-} // utils
+} // clock
 } // os
 
 #endif

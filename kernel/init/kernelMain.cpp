@@ -1,29 +1,30 @@
 #include "utils/utils.h"
 #include "utils/stl.hpp"
-#include "mem/memoryManage.h"
+#include "mem/memory.h"
 #include "mem/virtualMemory.h"
+#include "driver/clock.h"
 #include "test/test.hpp"
-#include "new"
 #include "intr/interruption.h"
+#include "new"
 
 void initBssVariables() {
-	for (size_t i = 0; i < IDT_SIZE; ++i) {
-		new (intrHandlers + i) std::function<void()>{};
+	for (size_t i = 0; i < os::intr::IDT_SIZE; ++i) {
+		new (os::intr::intrHandlers + i) std::function<void()>{};
 	}
 	new (&os::mem::memoryManager) os::mem::PlainMemoryManager{};
 	new (&os::io::cout) os::io::VideoOutStream{};
-	new (&os::utils::clock) os::utils::Clock{};
+	new (&os::clock::clock) os::clock::Clock{};
 }
 
 extern "C" int kernelMain() {
-
 	initBssVariables();
 	performUnitTests();
 
-	initMemory();
-	initInterruption();
-	initVirtualMemory();
-	
+	os::mem::initMem();
+	os::clock::initClock();
+	os::intr::initIntr();
+	os::mem::vm::initVM();
+
 	os::io::cout << os::io::cls << "Welcome to Slardar OS\n";
 	while (true) {}
 	return 0;

@@ -1,13 +1,12 @@
-#ifndef __MEMORY_MANAGE_H
-#define __MEMORY_MANAGE_H
+#ifndef __MEMORY_H
+#define __MEMORY_H
 #include "defs.h"
 #include "plainMemoryManager.hpp"
 
 namespace os {
 namespace mem {
 
-// global memory manager
-extern MemoryManager& memoryManager;
+namespace hidden {
 
 class MemoryInfoUnit {
 public:
@@ -22,6 +21,11 @@ public:
 		reserved = 2
 	};
 };
+
+} // hidden
+
+// global memory manager
+extern MemoryManager& memoryManager;
 
 template <typename T1, typename T2>
 void memoryCopy(T1* dest_, T2* src_, size_t size) {
@@ -74,16 +78,9 @@ bool operator != (const PlainAllocator<T>&, const PlainAllocator<T>&) {
 	return false;
 }
 
+void initMem();
+
 } // mem
 } // os
-
-
-
-const uint32_t PAGE_TABLE_SIZE = 0x400;
-
-// static uint32_t PDEs[PAGE_DIR_SIZE];
-// static uint32_t PTEs[PAGE_DIR_SIZE * PAGE_TABLE_SIZE];
-
-void initMemory();
 
 #endif

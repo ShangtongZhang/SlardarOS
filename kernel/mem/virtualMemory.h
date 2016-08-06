@@ -2,6 +2,12 @@
 #define __VIRTUAL_MEMORY_H
 #include "defs.h"
 
+namespace os {
+namespace mem {
+namespace vm {
+
+namespace hidden {
+
 constexpr uint32_t ENTRY_PER_PAGE_DIR = 0x400;
 constexpr uint32_t ENTRY_PER_PAGE_TABLE = 0x400;
 constexpr uint32_t PAGE_SIZE = 0x1000;
@@ -12,8 +18,9 @@ constexpr uint32_t PAGE_RW_W = 2;
 constexpr uint32_t PAGE_US_S = 0;
 constexpr uint32_t PAGE_US_U = 4;
 
-void initVirtualMemory();
-void pageFaultHandler();
+} // hidden
+
+void initVM();
 
 /**
  * Initialize a page directory, map all virtual address 
@@ -22,5 +29,9 @@ void pageFaultHandler();
  * @return Address of the page directory
  */
 uint32_t initPageDirectory(uint32_t maxAddress = END_OF_KENEL_SPACE);
+
+} // vm
+} // mem
+} // os
 
 #endif

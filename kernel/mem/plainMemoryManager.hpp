@@ -188,7 +188,7 @@ public:
 
 };
 
-}
-}
+} // mem
+} // os
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef __STL_HPP
 #define __STL_HPP
 #include "defs.h"
-#include "mem/memoryManage.h"
+#include "mem/memory.h"
 #include "vector"
 #include "string"
 
@@ -25,6 +25,6 @@ string to_string(const T& data) {
 	return data.toString();
 }
 
-}
+} // os
 
 #endif
