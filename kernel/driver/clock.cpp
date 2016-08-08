@@ -8,9 +8,9 @@ namespace clock {
 
 namespace hidden {
 
-void clockHandler() {
+void clockHandler(uint32_t) {
 	os::clock::clock++;
-	os::io::cout << os::io::cls << os::clock::clock;
+	// os::io::cout << os::io::cls << os::clock::clock;
 	os::intr::endInterruption();
 }
 

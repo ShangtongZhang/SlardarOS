@@ -12,7 +12,7 @@ namespace hidden {
 uint64_t idt[IDT_SIZE];
 typedef void (*IntrHandler) ();
 
-bool hasErrorCode(uint32_t intrNo) {
+constexpr bool hasErrorCode(uint32_t intrNo) {
 	switch (intrNo) {
 		case 8:
 		case 10:
@@ -33,8 +33,13 @@ bool hasErrorCode(uint32_t intrNo) {
 template <uint32_t intrNo>
 void intrHandlerProxy() {
 	__asm__("pushal");
+	uint32_t errorCode = 0;
+	if (hasErrorCode(intrNo)) {
+		__asm__("movl 4(%%ebp), %0"
+				:"=r"(errorCode));
+	}
 	if (intrHandlers[intrNo]) {
-		intrHandlers[intrNo]();
+		intrHandlers[intrNo](errorCode);
 	}
 	__asm__("popal");
 	__asm__("leave");
@@ -88,7 +93,7 @@ void initIDT() {
 
 } // hidden
 
-std::function<void()> intrHandlers[IDT_SIZE];
+std::function<void(uint32_t)> intrHandlers[IDT_SIZE];
 
 void initIntr() {
 	hidden::init8259A();

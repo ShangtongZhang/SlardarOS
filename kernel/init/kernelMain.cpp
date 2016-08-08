@@ -7,9 +7,9 @@
 #include "intr/interruption.h"
 #include "new"
 
-void initBssVariables() {
+void initGlobalVariables() {
 	for (size_t i = 0; i < os::intr::IDT_SIZE; ++i) {
-		new (os::intr::intrHandlers + i) std::function<void()>{};
+		new (os::intr::intrHandlers + i) std::function<void(uint32_t)>{};
 	}
 	new (&os::mem::memoryManager) os::mem::PlainMemoryManager{};
 	new (&os::io::cout) os::io::VideoOutStream{};
@@ -17,10 +17,11 @@ void initBssVariables() {
 }
 
 extern "C" int kernelMain() {
-	initBssVariables();
+	initGlobalVariables();
+	os::mem::initMem();
+	
 	performUnitTests();
 
-	os::mem::initMem();
 	os::clock::initClock();
 	os::intr::initIntr();
 	os::mem::vm::initVM();

@@ -69,7 +69,7 @@ enum Interruption {
 	pageFault = 0xe
 };
 
-extern std::function<void()> intrHandlers[IDT_SIZE];
+extern std::function<void(uint32_t)> intrHandlers[IDT_SIZE];
 
 } // intr
 } // os

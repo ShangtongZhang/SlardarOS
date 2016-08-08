@@ -8,7 +8,10 @@ namespace vm {
 
 namespace hidden {
 
-void pageFaultHandler() {
+void pageFaultHandler(uint32_t) {
+	uint32_t virtualAddr = 0;
+	__asm__("movl %%cr2, %0"
+			:"=r"(virtualAddr));
 }
 
 } // hidden
@@ -63,8 +66,8 @@ void initVM() {
 			"movl %%eax, %%cr0;"
 			::"r"(pageDirAddr)
 			:"%eax");
-	__asm__("movl 0x2000005, %%eax"
-			:::"%eax");
+	// __asm__("movl 0x2000005, %%eax"
+	// 		:::"%eax");
 }
 
 } // vm

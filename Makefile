@@ -60,7 +60,7 @@ ifeq ($(OS), OSX)
 CXX_FLAGS += -nostdlib
 endif
 
-.PHONY: qemu debug clean start
+.PHONY: qemu debug clean start osComps
 
 debug: osImage
 	$(V) ttab -w eval '$(GDB) -q -tui -x $(BUILD_DIR)/gdb.cmd'
@@ -96,7 +96,7 @@ $(BUILD_DIR)/%.o: %.cpp
 
 osComps: buildDir bootSector bootLoader
 
-osImage: osComps kernel
+osImage: clean osComps kernel
 	$(V) $(DD) if=/dev/zero of=$(BUILD_DIR)/$(EMPTY_IMAGE) bs=512 count=2880 $(HIDDEN)
 	$(V) $(DD) if=$(BUILD_DIR)/$(BOOT_SECTOR_BIN) of=$(BUILD_DIR)/$(OS_IMAGE) bs=512 count=1 $(HIDDEN)
 	$(V) $(DD) if=$(BUILD_DIR)/$(EMPTY_IMAGE) of=$(BUILD_DIR)/$(OS_IMAGE) skip=1 seek=1 bs=512 count=2879 $(HIDDEN)
