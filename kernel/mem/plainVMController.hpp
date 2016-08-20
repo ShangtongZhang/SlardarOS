@@ -2,6 +2,7 @@
 #define __PLAIN_VM_CONTROLLER_HPP
 #include "vmController.hpp"
 #include "memory.h"
+#include "pagePool.hpp"
 
 namespace os {
 namespace mem {
@@ -9,6 +10,7 @@ namespace vm {
 
 class PlainVMController: public VMController {
 private:
+	using PageInfo = PagePool::PageInfo;
 	uint32_t initPageDirectory(uint32_t maxAddress) {
 		using namespace hidden;
 		uint32_t nPages = maxAddress / PAGE_SIZE + 1;
@@ -62,8 +64,9 @@ public:
 		if (PDE & PAGE_P) {
 			return;
 		}
-		uint32_t* pageTable = static_cast<uint32_t*>(
-			os::mem::memoryManager.allocateMemory(PAGE_SIZE, PAGE_SIZE));
+		uint32_t* pageTable = static_cast<uint32_t*>(pagePool->getPage(
+			PageInfo(targetAddress, targetPageDir, PageInfo::Flag::pageTable)));
+			// os::mem::memoryManager.allocateMemory(PAGE_SIZE, PAGE_SIZE));
 		uint32_t PTE = 0 | PAGE_NP | PAGE_US_S | PAGE_RW_W;
 		for (size_t i = 0; i < ENTRY_PER_PAGE_TABLE; ++i) {
 			pageTable[i] = PTE;
@@ -78,11 +81,16 @@ public:
 		if (PTE & PAGE_P) {
 			return;
 		}
-		uint8_t* page = static_cast<uint8_t*>(
-			os::mem::memoryManager.allocateMemory(PAGE_SIZE, PAGE_SIZE));
+		uint8_t* page = static_cast<uint8_t*>(pagePool->getPage(
+			PageInfo(targetAddress, targetPageDir)));
+			// os::mem::memoryManager.allocateMemory(PAGE_SIZE, PAGE_SIZE));
 		PTE |= reinterpret_cast<uint32_t>(page);
 		PTE |= PAGE_P | PAGE_TO_FREE;
 		pageTable[PTEIndex] = PTE;
+	}
+
+	void invalidatePage(const PageInfo&) override {
+
 	}
 	
 };

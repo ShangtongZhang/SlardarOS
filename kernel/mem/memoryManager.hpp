@@ -19,11 +19,7 @@ public:
 	 */ 
 	virtual uint32_t maxAddress() = 0;
 
-	/**
-	 * Do not declare dtor explicitly, as ths os 
-	 * doesn't have memory management functionality for now.
-	 */
-	//virtual ~MemoryManager();
+	virtual ~MemoryManager() {};
 };
 
 } // mem
