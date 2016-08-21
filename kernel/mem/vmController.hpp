@@ -22,7 +22,7 @@ public:
 		std::function<void(const PageInfo&)> invalidator = [this](const PageInfo& pageInfo) {
 			this->invalidatePage(pageInfo);
 		};
-		pagePool.reset(new PagePoolType(pagePoolSize, invalidator));
+		pagePool.reset(new PagePoolType(pagePoolSize, std::move(invalidator)));
 	}
 
 	void pageFaultHandler(uint32_t) {

@@ -26,17 +26,16 @@ public:
 protected:
 	// Real number of pages
 	size_t nPages;
-	const std::function<void(const PageInfo&)>& invalidator;
+	const std::function<void(const PageInfo&)> invalidator;
 public:
-
-
-
-	PagePool(size_t nPages_, const std::function<void(const PageInfo&)>& invalidator_)
+	PagePool(size_t nPages_, const std::function<void(const PageInfo&)>&& invalidator_)
 		: nPages(nPages_), invalidator(invalidator_) {
 
 	}
 
 	virtual void* getPage(const PageInfo&) = 0;
+
+	// PagePool object will never die within a forseeable future 
 	virtual ~PagePool() {}
 };
 

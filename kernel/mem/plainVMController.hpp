@@ -3,6 +3,7 @@
 #include "vmController.hpp"
 #include "memory.h"
 #include "pagePool.hpp"
+#include "test/assert.h"
 
 namespace os {
 namespace mem {
@@ -89,8 +90,21 @@ public:
 		pageTable[PTEIndex] = PTE;
 	}
 
-	void invalidatePage(const PageInfo&) override {
+	void invalidatePage(const PageInfo& pageInfo) override {
+		uint32_t vAddr = pageInfo.virtualAddr;
 
+		/**
+		 * For now only ordinary page can be invalidated.
+		 * Invalidating page of page table isn't allowed.
+		 */
+		assert(pageInfo.flags & PageInfo::Flag::page);
+
+		uint32_t* pageDir = reinterpret_cast<uint32_t*>(pageInfo.pageDir);
+		uint32_t PDEIndex = getPDEIndex(vAddr);
+		uint32_t PDE = pageDir[PDEIndex];
+		uint32_t* pageTable = reinterpret_cast<uint32_t*>(getAddress(PDE));
+		uint32_t PTEIndex = getPTEIndex(vAddr);
+		pageTable[PTEIndex] &= ~PAGE_P;
 	}
 	
 };

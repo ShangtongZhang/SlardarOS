@@ -4,6 +4,7 @@
 #include "mem/memory.h"
 #include "vector"
 #include "string"
+#include "map"
 
 namespace os {
 
@@ -12,6 +13,13 @@ using vector = std::vector<T, mem::PlainAllocator<T>>;
 
 template <typename T>
 using basic_string = std::basic_string<T, std::char_traits<T>, mem::PlainAllocator<T>>;
+
+template<
+    class Key,
+    class T,
+    class Compare = std::less<Key>
+>
+using map = std::map<Key, T, Compare, mem::PlainAllocator<std::pair<const Key, T>>>;
 
 using string = basic_string<char>;
 
