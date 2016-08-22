@@ -48,16 +48,6 @@
 
 #define TOP_OF_STACK 0x1fffff
 #define BASE_OF_HEAP 0x200000
-#define END_OF_KENEL_SPACE 0x2000000
-
-#define DPL0 0x00
-#define DPL1 0x20
-#define DPL2 0x40
-#define DPL3 0x60
-
-#define RPL0 0
-#define RPL1 1
-#define RPL2 2
-#define RPL3 3
+// #define END_OF_KENEL_SPACE 0x2000000
 
 #endif

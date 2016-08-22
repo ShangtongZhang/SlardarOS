@@ -1,29 +1,13 @@
-#include "utils/utils.h"
-#include "utils/stl.hpp"
+#include "initialization.h"
 #include "mem/memory.h"
 #include "mem/virtualMemory.h"
 #include "driver/clock.h"
-#include "test/test.hpp"
 #include "intr/interruption.h"
-#include "new"
 
-namespace os {
-namespace init {
-
-void initBSS() {
-	for (size_t i = 0; i < os::intr::IDT_SIZE; ++i) {
-		new (os::intr::intrHandlers + i) std::function<void(uint32_t)>{};
-	}
-	new (&os::mem::memoryManager) os::mem::PlainMemoryManager{};
-	new (&os::io::cout) os::io::VideoOutStream{};
-	new (&os::clock::clock) os::clock::Clock{};
-	new (&os::mem::vm::vmController) os::mem::vm::PlainVMController{};
-}
-
-} // init
-} // os
+#include "test/test.hpp"
 
 extern "C" int kernelMain() {
+	os::init::initGDT();
 	os::init::initBSS();
 	os::mem::initMem();
 

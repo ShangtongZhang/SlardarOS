@@ -53,6 +53,8 @@ public:
 	static constexpr uint32_t PAGE_TO_FREE = 0x200;
 	static constexpr uint32_t PAGE_NOT_TO_FREE = 0;
 
+	static constexpr uint32_t END_OF_KENEL_SPACE = 0x2000000;
+
 	virtual uint32_t createKernelPageDir() = 0;
 	virtual uint32_t createUserPageDir() = 0;
 	virtual void PDEHandler(uint32_t* pageDir, uint32_t PDEIndex) = 0;

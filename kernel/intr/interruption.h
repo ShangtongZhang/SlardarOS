@@ -2,6 +2,7 @@
 #define __INTERRUPTION_H
 #include "defs.h"
 #include "functional"
+#include "init/initialization.h"
 
 namespace os {
 namespace intr {
@@ -25,7 +26,7 @@ private:
 public:
 	template <typename T>
 	GateDescriptor(T* offset_, 
-		uint16_t selector_ = static_cast<uint16_t>(SELECTOR_FLAT_CODE_SEG),
+		uint16_t selector_ = static_cast<uint16_t>(os::init::GDTSelector::codeKernel),
 		uint8_t attr_ = static_cast<uint8_t>(GateAttr::interruptionGate), 
 		uint8_t paramCount_ = 0) :
 		selector(selector_), 
