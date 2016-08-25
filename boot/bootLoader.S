@@ -174,7 +174,7 @@ mov %ax, %es
 xorl %esi, %esi
 mov $SELECTOR_FLAT_STACK_SEG, %ax
 mov %ax, %ss
-movl $TOP_OF_STACK, %eax
+movl $TOP_OF_KERNEL_STACK, %eax
 movl %eax, %esp
 movl %eax, %ebp
 ljmp $SELECTOR_CODE_SEG, $0

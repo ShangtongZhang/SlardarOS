@@ -37,6 +37,7 @@ public:
 	enum GDTAttr {
 		code = 0x98,
 		dataRW = 0x92,
+		dataRWA = 0x93,
 		bit32 = 0x4000,
 		granularity4K = 0x8000,
 		DPL0 = 0x00,
@@ -48,11 +49,27 @@ void initBSS();
 void initGDT();
 
 enum GDTSelector {
+	RPL0 = 0x0,
+	RPL3 = 0x3,
 	codeKernel = 0x8,
 	dataKernel = 0x10,
 	codeUser = 0x18,
 	dataUser = 0x20
 };
+
+template <typename T>
+void enterRing3(const T& functor) {
+	__asm__("pushl %%eax;"
+			::"a"(GDTSelector::dataUser + GDTSelector::RPL3));
+	__asm__("pushl %%eax;"
+			::"a"(TOP_OF_USER_STACK));
+	__asm__("pushl %%eax;"
+			::"a"(GDTSelector::codeUser + GDTSelector::RPL3));
+	__asm__("pushl $Ring3;"
+			"retf;");
+	__asm__("Ring3:");
+	functor();
+}
 
 } // init
 } // os
