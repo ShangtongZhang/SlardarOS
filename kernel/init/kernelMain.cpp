@@ -3,12 +3,13 @@
 #include "mem/virtualMemory.h"
 #include "driver/clock.h"
 #include "intr/interruption.h"
+#include "intr/ring.h"
 
 #include "test/test.hpp"
 
 extern "C" int kernelMain() {
-	os::init::initGDT();
-	os::init::initBSS();
+	os::init::initialize();
+	os::intr::enterRing3([](){});
 	os::mem::initMem();
 
 	performUnitTests();

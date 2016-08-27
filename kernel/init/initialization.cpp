@@ -5,13 +5,24 @@
 #include "mem/virtualMemory.h"
 #include "driver/clock.h"
 #include "intr/interruption.h"
+#include "intr/ring.h"
 #include "new"
 
 namespace os {
 namespace init {
 
-constexpr size_t GDT_SIZE = 5;
+namespace hidden {
+
+}
+
+constexpr size_t GDT_SIZE = 7;
 uint64_t gdt[GDT_SIZE];
+TaskStateSegment tss;
+
+void enterRing0() {
+	int n = 0;
+	++n;
+}
 
 void initBSS() {
 	for (size_t i = 0; i < os::intr::IDT_SIZE; ++i) {
@@ -24,16 +35,20 @@ void initBSS() {
 }
 
 void initGDT() {
-	using GDTAttr = GDTDescriptor::GDTAttr;
-	gdt[0] = GDTDescriptor(0, 0, 0);
-	gdt[1] = GDTDescriptor(0, 0xffffff, 
-		GDTAttr::code | GDTAttr::bit32 | GDTAttr::granularity4K | GDTAttr::DPL0);
-	gdt[2] = GDTDescriptor(0, 0xffffff,
-		GDTAttr::dataRW | GDTAttr::bit32 | GDTAttr::granularity4K | GDTAttr::DPL0);
-	gdt[3] = GDTDescriptor(0, 0xffffff,
-		GDTAttr::code | GDTAttr::bit32 | GDTAttr::granularity4K | GDTAttr::DPL3);
-	gdt[4] = GDTDescriptor(0, 0xffffff,
-		GDTAttr::dataRW | GDTAttr::bit32 | GDTAttr::granularity4K | GDTAttr::DPL3);
+	using SegAttr = SegDescriptor::SegAttr;
+	gdt[0] = SegDescriptor(0, 0, 0);
+	gdt[1] = SegDescriptor(0, 0xffffff, 
+		SegAttr::code | SegAttr::bit32 | SegAttr::granularity4K | SegAttr::DPL0);
+	gdt[2] = SegDescriptor(0, 0xffffff,
+		SegAttr::dataRW | SegAttr::bit32 | SegAttr::granularity4K | SegAttr::DPL0);
+	gdt[3] = SegDescriptor(0, 0xffffff,
+		SegAttr::code | SegAttr::bit32 | SegAttr::granularity4K | SegAttr::DPL3);
+	gdt[4] = SegDescriptor(0, 0xffffff,
+		SegAttr::dataRW | SegAttr::bit32 | SegAttr::granularity4K | SegAttr::DPL3);
+	gdt[5] = SegDescriptor(reinterpret_cast<uint32_t>(&tss), sizeof(tss) - 1,
+		SegAttr::tssSeg | SegAttr::DPL0);
+	gdt[6] = GateDescriptor(os::intr::kernelProxy, GDTSelector::codeKernel + GDTSelector::RPL0,
+		GateDescriptor::GateAttr::callGate + SegAttr::DPL3, 1);
 
 	class __attribute__((__packed__)) {
 	public:
@@ -44,19 +59,25 @@ void initGDT() {
 	op.addr = reinterpret_cast<uint32_t>(gdt);
 	__asm__("lgdt (%0);"
 			::"p"(&op));
-	__asm__("movw %%ax, %%ds;"
-			::"a"(GDTSelector::dataKernel));
 	__asm__("movw %%ax, %%ss;"
 			::"a"(GDTSelector::dataKernel));
-	__asm__("movw %%ax, %%es;"
-			::"a"(GDTSelector::dataKernel));
-	__asm__("movw %%ax, %%fs;"
-			::"a"(GDTSelector::dataKernel));
-	__asm__("movw %%ax, %%gs;"
-			::"a"(GDTSelector::dataKernel));
+	os::utils::setSegmentRegisters(GDTSelector::dataKernel);
 	__asm__("ljmp %0, $fake;"
 			"fake:;"
 			::"i"(GDTSelector::codeKernel));
+}
+
+void initTSS() {
+	tss.ssRing0 = GDTSelector::dataKernel + GDTSelector::RPL0;
+	tss.espRing0 = TOP_OF_KERNEL_STACK;
+	__asm__("ltr %%ax"
+			::"a"(GDTSelector::tssSeg));
+}
+
+void initialize() {
+	initGDT();
+	initTSS();
+	initBSS();
 }
 
 } // init

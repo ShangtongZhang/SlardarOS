@@ -48,7 +48,7 @@
 
 #define TOP_OF_KERNEL_STACK 0x1fffff
 #define TOP_OF_USER_STACK 0x2fffff
+#define TOP_OF_STACK 0x2fffff
 #define BASE_OF_HEAP 0x300000
-// #define END_OF_KENEL_SPACE 0x2000000
 
 #endif

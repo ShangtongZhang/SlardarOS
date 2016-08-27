@@ -39,6 +39,16 @@ namespace std {
 namespace os {
 namespace utils {
 
+void setSegmentRegisters(uint16_t value) {
+	__asm__("movw %%ax, %%ds;"
+			::"a"(value));
+	__asm__("movw %%ax, %%es;"
+			::"a"(value));
+	__asm__("movw %%ax, %%fs;"
+			::"a"(value));
+	__asm__("movw %%ax, %%gs;"
+			::"a"(value));
+}
 
 } // utils
 } // os

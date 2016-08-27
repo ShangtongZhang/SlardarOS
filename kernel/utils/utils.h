@@ -8,6 +8,8 @@
 namespace os {
 namespace utils {
 
+void setSegmentRegisters(uint16_t);
+
 } // utils
 } // os
 

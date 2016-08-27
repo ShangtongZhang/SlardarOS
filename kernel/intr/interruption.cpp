@@ -2,6 +2,7 @@
 #include "sys/io.h"
 #include "utils/utils.h"
 #include "mem/virtualMemory.h"
+#include "init/infrastructure.hpp"
 #include "array"
 
 namespace os {
@@ -87,7 +88,7 @@ void initIDT() {
 		intrHandlerHelper<std::make_index_sequence<IDT_SIZE>>::makeIntrHandlers();
 	auto intrHandlersAddr = intrHandlers.data();
 	for (size_t i = 0; i < IDT_SIZE; ++i) {
-		idt[i] = GateDescriptor(intrHandlersAddr[i]);
+		idt[i] = os::init::GateDescriptor(intrHandlersAddr[i]);
 	}
 }
 
