@@ -12,7 +12,7 @@ enum GDTSelector {
 	codeUser = 0x18,
 	dataUser = 0x20,
 	tssSeg = 0x28,
-	ring0 = 0x30
+	systemCall = 0x30
 };
 
 class SegDescriptor {

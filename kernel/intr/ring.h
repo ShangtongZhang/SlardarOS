@@ -9,14 +9,15 @@ namespace intr {
 
 using os::init::GDTSelector;
 
-enum SystemCall {
-	nop = 0x55
+enum SystemCallType {
+	nop = 0
 };
 
-void enterRing0(SystemCall systemCall = SystemCall::nop);
+void systemCall(SystemCallType systemCall = SystemCallType::nop);
 
 template <typename T>
 void enterRing3(const T& functor) {
+	// TODO: Decide which %esp to use
 	__asm__("movl %%esp, %%eax"
 			:"=a"(os::init::tss.espRing0));
 	__asm__("pushl %%eax;"
@@ -32,10 +33,11 @@ void enterRing3(const T& functor) {
 
 	functor();
 
-	enterRing0();
+	systemCall();
+	while (true) {}
 }
 
-void kernelProxy(size_t);
+void kernelProxy(SystemCallType);
 
 } // intr
 } // os
