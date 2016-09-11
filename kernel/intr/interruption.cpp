@@ -79,7 +79,7 @@ void init8259A() {
 	outb(0x1, SlAVE_8259A_PORT + 1);
 
 	// Operation Control Word
-	outb(~OCW_CLOCK, MASTER_8259A_PORT + 1);
+	outb(~(OCW_CLOCK | OCW_KEYBOARD), MASTER_8259A_PORT + 1);
 	outb(0xff, SlAVE_8259A_PORT + 1);
 }
 
