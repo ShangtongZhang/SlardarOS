@@ -3,7 +3,12 @@
 
 ## Features:
 * support STL container
-* support C++14 
+* support C++14
+* bootloader
+* virtual memory
+* interruption
+* privilege level switch
+* mutil-processes (in progress)
 
 ## Dependency:
 * nasm >= 0.98
